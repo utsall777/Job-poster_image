@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>채용공고 이미지 만들기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5f8;--panel:#fff;--ink:#1d2433;--line:#d9dee7;--main:#0b4fa8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171d;--panel:#1d222b;--ink:#e8ecf3;--line:#343b48}}
+:root[data-theme="dark"]{--bg:#14171d;--panel:#1d222b;--ink:#e8ecf3;--line:#343b48}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif}
+.wrap{display:grid;grid-template-columns:minmax(300px,440px) 1fr;gap:20px;padding:20px;max-width:1100px;margin:0 auto}
+@media(max-width:760px){.wrap{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+h1{font-size:19px;margin:0 0 14px}
+label{display:block;font-size:13px;font-weight:700;margin:12px 0 4px}
+small{font-weight:400;opacity:.65}
+input,textarea{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:transparent;color:inherit}
+textarea{resize:vertical;min-height:64px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+input[type=color]{padding:2px;height:36px}
+button{font:inherit;font-weight:700;border:0;border-radius:8px;padding:12px 16px;background:var(--main);color:#fff;cursor:pointer;width:100%;margin-top:16px;font-size:15px}
+button.sub{background:transparent;color:inherit;border:1px solid var(--line);margin-top:8px;font-weight:500}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
+.prev{display:flex;flex-direction:column;align-items:center;gap:8px;position:sticky;top:12px;align-self:start}
+canvas{width:100%;max-width:360px;height:auto;border:1px solid var(--line);border-radius:6px;background:#fff}
+.hint{font-size:12px;opacity:.7;text-align:center}
+#msg{font-size:13px;min-height:18px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="panel">
+<h1>채용공고 이미지 만들기</h1>
+<label>상단 문구</label><input id="sub" value="7월 2주차 채용공고">
+<label>공고 제목</label><textarea id="title" rows="2">공영홈쇼핑
+2026 고령자 채용 공고</textarea>
+<div class="row">
+<div><label>모집 시작일</label><input id="s" value="9월21일"></div>
+<div><label>모집 마감일 <small>(빨간색)</small></label><input id="e" value="10월06일"></div>
+</div>
+<label>근무형태 <small>한 줄에 한 항목</small></label>
+<textarea id="type" rows="3">모집 : 11명
+연령 : 1960 - 1965년생
+경력 무관</textarea>
+<label>근무처</label><input id="place" value="서울시 OOO구">
+<label>급여 <small>한 줄에 한 항목</small></label>
+<textarea id="pay" rows="2">프로그램 코디네이터 연 3,800만원
+전기 설비: 연 5,000만원</textarea>
+<label>직무 / 담당업무 <small>한 줄에 한 항목</small></label>
+<textarea id="duty" rows="4">프로그램 코디네이터 (PC), 전기설비
+프로그램 코디네이터 (PC) - 스튜디오 통제 등 방송 중 운영지원 수행
+전기설비 - 전반 전기시설 관리</textarea>
+<div class="row">
+<div><label>상담 전화</label><input id="tel" value="02-460-5150"></div>
+<div><label>메인 색상</label><input id="color" type="color" value="#0b4fa8"></div>
+</div>
+<label>기관명 <small>(하단 바 오른쪽)</small></label><input id="org" value="중장년취업사관학교">
+<label>하단 로고 <small>(서울시 50플러스 중장년 취업사관학교 로고 파일, 올리면 기관명 대신 표시)</small></label><input id="logo" type="file" accept="image/*">
+<label>지원 QR 이미지</label><input id="qrimg" type="file" accept="image/*">
+<button id="dl">PNG 저장 (왼쪽 90° 회전, 1920×1080)</button>
+<button class="sub" id="reset">입력 내용 초기화</button>
+<div id="msg" role="status"></div>
+</div>
+<div class="prev">
+<canvas id="cv" width="1080" height="1920" aria-label="채용공고 미리보기"></canvas>
+<div class="hint">입력하면 바로 반영돼요. 글이 길면 크기가 자동으로 줄어듭니다.</div>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+const W=1080,H=1920,$=id=>document.getElementById(id),cv=$('cv'),ctx=cv.getContext('2d');
+const F="'Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif";
+let logoImg=null,qrImg=null;
+const lines=v=>v.split('\n').map(x=>x.trim()).filter(Boolean);
+function shade(hex,a){const n=parseInt(hex.slice(1),16);return `rgb(${[n>>16,(n>>8)&255,n&255].map(v=>Math.round(v*a))})`}
+function wrap(t,fs,w,wt=500){ctx.font=`${wt} ${fs}px ${F}`;const out=[];let cur='';for(const ch of t){if(ctx.measureText(cur+ch).width>w&&cur){out.push(cur);cur=ch.trim()?ch:''}else cur+=ch}if(cur)out.push(cur);return out}
+function rr(x,y,w,h,r,fill){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill()}
+function box(items,w,fs,bullet,s){const pad=34*s+8,ind=bullet?34:0,sp=10*s,L=[];items.forEach(t=>wrap(t,fs,w-2*pad-ind).forEach((x,i)=>L.push({x,first:i==0,b:bullet&&i==0})));const lh=fs*1.5;return{L,pad,fs,ind,lh,sp,n:items.length,ch:L.length*lh+Math.max(0,items.length-1)*sp,h:L.length*lh+Math.max(0,items.length-1)*sp+2*pad}}
+
+function render(){
+  const main=$('color').value,PAD=60,CW=W-2*PAD,GX=24,LW=Math.round((CW-GX)*.7),RW=CW-GX-LW,INK='#1d2433',GREY='#eef0f3',RX=PAD+LW+GX;
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+  // 헤더
+  const HEAD=340;ctx.fillStyle=main;ctx.fillRect(0,0,W,HEAD);
+  ctx.textBaseline='middle';ctx.fillStyle='#fff';ctx.textAlign='right';ctx.font=`500 34px ${F}`;ctx.fillText($('sub').value,W-36,44);
+  ctx.textAlign='center';
+  const tl=lines($('title').value),tw=W-2*PAD;let fs=96;
+  while(fs>40){const n=tl.flatMap(l=>wrap(l,fs,tw,900)).length;if(n*fs*1.25<=HEAD-110)break;fs-=4}
+  const all=tl.flatMap(l=>wrap(l,fs,tw,900)),lh=fs*1.25,y0=80+(HEAD-80-all.length*lh)/2;
+  ctx.font=`900 ${fs}px ${F}`;ctx.fillStyle='#fff';all.forEach((l,i)=>ctx.fillText(l,W/2,y0+lh*(i+.5)));
+  // 하단: 상담전화 70% + 로고 30%
+  const FOOT=102,fy=H-FOOT,FW=Math.round(W*.7);
+  ctx.fillStyle=main;ctx.fillRect(0,fy,FW,FOOT);ctx.fillRect(FW,fy,W-FW,6);
+  const ptxt='상담 : '+$('tel').value;let pf=38;ctx.font=`900 ${pf}px ${F}`;
+  while(pf>28&&ctx.measureText(ptxt).width>FW-60){pf-=2;ctx.font=`900 ${pf}px ${F}`}
+  ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(ptxt,FW/2,fy+FOOT/2);
+  const lw0=W-FW;
+  if(logoImg){const r=Math.min((lw0-48)/logoImg.width,(FOOT-24)/logoImg.height),dw=logoImg.width*r,dh=logoImg.height*r;ctx.drawImage(logoImg,FW+(lw0-dw)/2,fy+(FOOT-dh)/2+3,dw,dh)}
+  else{const ol=wrap($('org').value,30,lw0-40,700);ctx.fillStyle=INK;ctx.textAlign='center';ctx.font=`700 30px ${F}`;ol.forEach((l,i)=>ctx.fillText(l,FW+lw0/2,fy+FOOT/2+(i-(ol.length-1)/2)*36))}
+  // 본문 배치 계산
+  const per=[$('s').value,$('e').value],GAP_MIN=26,top=HEAD+36,avail=fy-36-top;
+  let s=1,B;
+  for(;s>.4;s-=.03){
+    const f=44*s,tf=54*s,th=tf*1.9,perH=150*s,type=box(lines($('type').value),LW,f,true,s),pay=box(lines($('pay').value),CW,f,false,s),duty=box(lines($('duty').value),CW,f,true,s),placeMin=130*s;
+    const A=Math.max(th+RW+th+placeMin,th+perH+th+type.h);
+    B={f,tf,th,perH,type,pay,duty,A,tot:A+th+pay.h+th+duty.h};
+    if(avail-B.tot>=GAP_MIN*3)break;
+  }
+  const gap=Math.min(56,(avail-B.tot)/3),th=B.th;let y=top;
+  function title(t,x,y,sz){const EMO={'모집기간':'📅','지원 QR':'📱','근무형태':'💼','근무처':'📍','급여':'💰','직무 / 담당업무':'📋'};ctx.font=`400 ${sz*.9}px ${F}`;ctx.textAlign='left';ctx.fillStyle='#000';ctx.fillText(EMO[t]||'✔',x,y+th/2+2);ctx.fillStyle=shade(main,.8);ctx.font=`900 ${sz}px ${F}`;ctx.fillText(t,x+sz*1.3,y+th/2+1)}
+  function draw(b,x,y,w,hh,center){rr(x,y,w,hh,22,GREY);ctx.font=`500 ${b.fs}px ${F}`;let cy=y+(hh-b.ch)/2+b.lh/2;
+    b.L.forEach((l,i)=>{if(l.first&&i>0)cy+=b.sp;ctx.fillStyle=INK;if(center){ctx.textAlign='center';ctx.fillText(l.x,x+w/2,cy)}else{ctx.textAlign='left';if(l.b){ctx.fillStyle=main;ctx.beginPath();ctx.arc(x+b.pad+8,cy,8,0,7);ctx.fill();ctx.fillStyle=INK}ctx.fillText(l.x,x+b.pad+b.ind,cy)}cy+=b.lh})}
+  // 그룹: 왼쪽(모집기간+근무형태) / 오른쪽(QR+근무처)
+  const G=B.A+gap;
+  title('모집기간',PAD,y,B.tf);title('지원 QR',RX,y,B.tf*.85);
+  rr(PAD,y+th,LW,B.perH,22,GREY);
+  const pf2=60*(B.perH/150);ctx.font=`900 ${pf2}px ${F}`;const a=per[0]+'  -  ',wa=ctx.measureText(a).width,we=ctx.measureText(per[1]).width,x0=PAD+LW/2-(wa+we)/2;
+  ctx.textAlign='left';ctx.fillStyle=INK;ctx.fillText(a,x0,y+th+B.perH/2+2);ctx.fillStyle='#e53935';ctx.fillText(per[1],x0+wa,y+th+B.perH/2+2);
+  // QR (정사각형)
+  const qy=y+th,p=14;rr(RX,qy,RW,RW,22,GREY);
+  const ix=RX+p,iy=qy+p,is=RW-2*p,url='';ctx.fillStyle='#fff';ctx.fillRect(ix,iy,is,is);
+  let drew=false;
+  if(qrImg){ctx.drawImage(qrImg,ix+8,iy+8,is-16,is-16);drew=true}
+  else if(url&&typeof qrcode==='function'){try{const q=qrcode(0,'M');q.addData(url);q.make();const n=q.getModuleCount(),c=(is-20)/n;ctx.fillStyle='#000';for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))ctx.fillRect(ix+10+k*c,iy+10+r*c,c+.6,c+.6);drew=true}catch(e){}}
+  if(!drew){ctx.fillStyle='#9aa3b2';ctx.textAlign='center';ctx.font=`900 56px ${F}`;ctx.fillText('QR',ix+is/2,iy+is/2-16);ctx.font=`500 22px ${F}`;ctx.fillText('QR 이미지를 올려 주세요',ix+is/2,iy+is/2+28)}
+  // 근무형태 (왼쪽, QR 높이까지 확장)
+  const ty=y+th+B.perH+gap;title('근무형태',PAD,ty,B.tf);
+  draw(B.type,PAD,ty+th,LW,G-(th+B.perH+gap+th),false);
+  // 근무처 (오른쪽, QR 아래)
+  const py=qy+RW+gap;title('근무처',RX,py,B.tf*.85);
+  const ph=G-(th+RW+gap+th);rr(RX,py+th,RW,ph,22,GREY);
+  const pfs=44*(B.perH/150),pw=wrap($('place').value,pfs,RW-40,900);ctx.font=`900 ${pfs}px ${F}`;ctx.fillStyle=INK;ctx.textAlign='center';
+  pw.forEach((l,i)=>ctx.fillText(l,RX+RW/2,py+th+ph/2+(i-(pw.length-1)/2)*pfs*1.3));
+  y+=G+gap;
+  title('급여',PAD,y,B.tf);y+=th;draw(B.pay,PAD,y,CW,B.pay.h,true);y+=B.pay.h+gap;
+  title('직무 / 담당업무',PAD,y,B.tf);y+=th;draw(B.duty,PAD,y,CW,B.duty.h,false);
+}
+const fields=[...document.querySelectorAll('input:not([type=file]),textarea')];
+let t;const go=()=>{clearTimeout(t);t=setTimeout(render,60);try{localStorage.setItem('jobposter',JSON.stringify(Object.fromEntries(fields.map(e=>[e.id,e.value]))))}catch(e){}};
+fields.forEach(e=>e.addEventListener('input',go));
+const defaults={};fields.forEach(e=>defaults[e.id]=e.value);
+try{const sv=JSON.parse(localStorage.getItem('jobposter')||'null');if(sv)for(const k in sv)if($(k))$(k).value=sv[k]}catch(e){}
+function load(key,url){const im=new Image();im.onload=()=>{if(key=='logo')logoImg=im;else qrImg=im;render()};im.src=url}
+function pick(id,key){$(id).onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{load(key,r.result);try{localStorage.setItem('jp_'+key,r.result)}catch(e){}};r.readAsDataURL(f)}}
+pick('logo','logo');pick('qrimg','qr');
+try{['logo','qr'].forEach(k=>{const d=localStorage.getItem('jp_'+k);if(d)load(k,d)})}catch(e){}
+$('reset').onclick=()=>{for(const k in defaults)$(k).value=defaults[k];qrImg=null;$('qrimg').value='';try{localStorage.removeItem('jp_qr')}catch(e){}render();go()};
+$('dl').onclick=()=>{
+  render();const name='채용공고_'+new Date().toISOString().slice(0,10)+'.png';
+  const rot=document.createElement('canvas');rot.width=H;rot.height=W;const rc=rot.getContext('2d');rc.translate(0,W);rc.rotate(-Math.PI/2);rc.drawImage(cv,0,0);
+  rot.toBlob(async b=>{
+    try{const d=window.claude&&await claude.use('downloads');
+      if(d){await d.save({filename:name,data:b});$('msg').textContent='저장 요청을 보냈어요.';return}
+    }catch(e){if(e&&e.code==='declined'){$('msg').textContent='저장을 취소했어요.';return}}
+    const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();$('msg').textContent='PNG를 내려받았어요.';
+  },'image/png');
+};
+render();
+window.addEventListener('load',render);
+(document.fonts?document.fonts.load('900 40px "Noto Sans KR"').then(()=>document.fonts.load('500 40px "Noto Sans KR"')):Promise.resolve()).then(render).catch(()=>{});
+</script>
+</body>
+</html>
