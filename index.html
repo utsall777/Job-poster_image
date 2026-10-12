@@ -3,2464 +3,405 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>채용공고 이미지 만들기</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<title>서울시 중장년 일자리박람회 2026 참여기업</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root{--bg:#f3f5f8;--panel:#fff;--ink:#1d2433;--line:#d9dee7;--main:#0b4fa8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171d;--panel:#1d222b;--ink:#e8ecf3;--line:#343b48}}
-:root[data-theme="dark"]{--bg:#14171d;--panel:#1d222b;--ink:#e8ecf3;--line:#343b48}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif}
-.wrap{display:grid;grid-template-columns:minmax(300px,440px) 1fr;gap:20px;padding:20px;max-width:1100px;margin:0 auto}
-@media(max-width:760px){.wrap{grid-template-columns:1fr}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
-h1{font-size:19px;margin:0 0 14px}
-label{display:block;font-size:13px;font-weight:700;margin:12px 0 4px}
-small{font-weight:400;opacity:.65}
-input,textarea{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:transparent;color:inherit}
-textarea{resize:vertical;min-height:64px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-input[type=color]{padding:2px;height:36px}
-button{font:inherit;font-weight:700;border:0;border-radius:8px;padding:12px 16px;background:var(--main);color:#fff;cursor:pointer;width:100%;margin-top:16px;font-size:15px}
-button.sub{background:transparent;color:inherit;border:1px solid var(--line);margin-top:8px;font-weight:500}
-button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
-.prev{display:flex;flex-direction:column;align-items:center;gap:8px;position:sticky;top:12px;align-self:start}
-canvas{width:100%;max-width:360px;height:auto;border:1px solid var(--line);border-radius:6px;background:#fff}
-.hint{font-size:12px;opacity:.7;text-align:center}
-#msg{font-size:13px;min-height:18px;text-align:center}
+:root{--bg:#f7f6f4;--card:#fff;--ink:#393a3c;--mute:#6a6a6e;--line:#e6e3de;--brand:#f89c1f;--bi:#393a3c;--ac:#b45f00;--dk:#393a3c;--dki:#fff;--soft:#fff3e0;--star:#e0a100;--fs:14px;--stk:calc(env(safe-area-inset-top,0px) + 3.5rem);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1c1e;--card:#262628;--ink:#f2f2f3;--mute:#a9a9ae;--line:#3a3a3d;--brand:#f89c1f;--ac:#ffb454;--dk:#f2f2f3;--dki:#1c1c1e;--bi:#1c1200;--soft:#3a2a12;--star:#f5c542}}
+:root[data-theme="dark"]{--bg:#1c1c1e;--card:#262628;--ink:#f2f2f3;--mute:#a9a9ae;--line:#3a3a3d;--brand:#f89c1f;--ac:#ffb454;--dk:#f2f2f3;--dki:#1c1c1e;--bi:#1c1200;--soft:#3a2a12;--star:#f5c542}
+html{font-size:var(--fs);scroll-padding-top:env(safe-area-inset-top,0px)}
+html.big{--fs:17px}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR",system-ui,-apple-system,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;line-height:1.45;font-variant-numeric:tabular-nums}
+.wrap{max-width:1600px;margin:0 auto;padding:0 1rem}
+header{background:var(--card);border-bottom:3px solid var(--brand)}
+.hd{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:space-between;align-items:center;padding:.7rem 1rem}
+h1{margin:0;font-size:1.25rem;font-weight:800;color:var(--ac);letter-spacing:-.02em}
+#sub{margin:0;color:var(--mute);font-size:.85rem}
+.acts{display:flex;gap:.4rem}
+.btn{font:inherit;font-weight:500;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:.35rem;padding:.35rem .75rem;cursor:pointer;display:inline-block;text-decoration:none}
+.btn:hover{border-color:var(--brand)}
+label.btn{color:var(--ac);border-color:var(--brand);font-weight:700}
+.sbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:.5rem 0;border-bottom:1px solid var(--line)}
+.tb{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+#q{flex:1 1 260px;font:inherit;font-size:1rem;padding:.5rem .8rem;border:1.5px solid var(--line);border-radius:.35rem;background:var(--card);color:var(--ink)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+#cnt{font-weight:700;font-size:.9rem;white-space:nowrap}
+select,input[type=number]{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:.35rem;padding:.3rem .45rem;width:100%}
+.tb select{width:auto}
+#favb.on,#dens.on,#pvb.on,.seg button.on,.tabs button.on,.chips button.on{background:var(--brand);color:var(--bi);border-color:var(--brand)}
+.seg{display:flex}
+.seg button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:.35rem .8rem;cursor:pointer}
+.seg button:first-child{border-radius:.35rem 0 0 .35rem}.seg button:last-child{border-radius:0 .35rem .35rem 0;border-left:0}
+.lay{display:grid;grid-template-columns:240px minmax(0,1fr);gap:1rem;align-items:start;padding-top:.8rem;padding-bottom:1.5rem}
+.side{position:sticky;top:calc(var(--stk) + .6rem);max-height:calc(100vh - var(--stk) - 1.4rem);overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:.5rem;padding:.7rem;display:flex;flex-direction:column;gap:.5rem}
+.side>summary{font-weight:800;color:var(--ac);cursor:pointer;margin-bottom:.4rem}
+.side[open]{display:flex}
+.lb{display:block;font-size:.75rem;color:var(--mute);font-weight:700;margin:.4rem 0 .2rem;border-bottom:1px solid var(--line);padding-bottom:.15rem}
+.tabs{display:flex;flex-direction:column;gap:.2rem}
+.tabs button{font:inherit;text-align:left;border:1px solid transparent;background:none;color:var(--ink);border-radius:.3rem;padding:.3rem .5rem;cursor:pointer;display:flex;justify-content:space-between}
+.tabs button:hover{background:var(--soft)}
+.chips{display:flex;flex-wrap:wrap;gap:.3rem}
+.chips button{font:inherit;font-size:.8rem;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:.15rem .6rem;cursor:pointer}
+em{font-style:normal;opacity:.7;font-size:.85em;margin-left:.3rem}
+.grid{display:grid;gap:.45rem}
+label{font-size:.75rem;color:var(--mute);font-weight:700;display:grid;gap:.15rem}
+#dyn{display:contents}
+#dyn label:first-child{order:-1}
+.tw{background:var(--card);border:1px solid var(--line);border-radius:.5rem}
+table{border-collapse:collapse;width:100%;table-layout:fixed;font-size:.86rem}
+th,td{padding:.28rem .5rem;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+td{height:1.95rem}
+thead th{background:var(--soft);color:var(--ac);position:sticky;top:var(--stk);z-index:2;cursor:pointer;font-weight:700;user-select:none}
+thead th:first-child{cursor:default}
+thead th:nth-child(1){width:2.2rem}thead th:nth-child(2){width:14%}thead th:nth-child(3){width:10%}thead th:nth-child(4){width:22%}thead th:nth-child(5){width:6%}thead th:nth-child(6){width:12%}thead th:nth-child(7){width:7%}thead th:nth-child(8){width:8%}thead th:nth-child(9){width:10%}
+tbody tr{cursor:pointer}
+tbody tr:nth-child(even) td{background:rgba(248,156,31,.06)}
+tbody tr:hover td{background:var(--soft)}
+.num{font-weight:700;color:var(--ac)}
+.dot{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;margin-right:.4rem}
+.star{background:none;border:0;font-size:1.1rem;line-height:1;color:var(--line);cursor:pointer;padding:0 .2rem}
+.star.on{color:var(--star)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.6rem}
+.card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--ic);border-radius:.4rem;padding:.6rem .7rem;cursor:pointer;display:flex;flex-direction:column;gap:.3rem}
+.card:hover{border-color:var(--ic)}
+.top{display:flex;gap:.4rem;align-items:center}
+.ind{font-size:.75rem;font-weight:700;color:var(--ic)}
+.pill{font-size:.7rem;border:1px solid var(--line);border-radius:99px;padding:0 .45rem;color:var(--mute)}
+.top .star{margin-left:auto}
+.card h3{margin:0;font-size:1rem;font-weight:800;line-height:1.3}
+.job{margin:0;color:var(--mute);font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tags{display:flex;flex-wrap:wrap;gap:.25rem}
+.tags span{background:var(--soft);color:var(--ac);font-size:.72rem;font-weight:700;border-radius:.25rem;padding:0 .4rem}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:.2rem .6rem;margin:.1rem 0 0}
+.kv div{min-width:0}
+.kv dt{font-size:.68rem;color:var(--mute)}
+.kv dd{margin:0;font-weight:700;font-size:.82rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kv .w{grid-column:1/-1}
+.hc{font-size:1.15rem;color:var(--ic)}
+.empty{text-align:center;padding:3rem 1rem;color:var(--mute);background:var(--card);border:1px dashed var(--line);border-radius:.5rem}
+dialog{background:var(--card);color:var(--ink);border:0;border-radius:.6rem;width:min(700px,94vw);max-height:90vh;padding:0}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+#dc{padding:1.2rem}
+.dh{display:flex;justify-content:space-between;gap:.5rem;align-items:flex-start}
+.dh h2{margin:.2rem 0 .5rem;font-size:1.4rem;line-height:1.25}
+.x{font:inherit;font-size:1.1rem;border:0;background:var(--soft);color:var(--ink);border-radius:50%;width:2.2rem;height:2.2rem;cursor:pointer;flex:none}
+#dc h4{margin:1rem 0 .3rem;font-size:.95rem;color:var(--ac)}
+.pre{white-space:pre-line;margin:0;overflow-wrap:anywhere}
+.dt{table-layout:auto}
+.dt th{width:6.5rem;color:var(--mute);font-weight:500;background:none;position:static;cursor:auto}
+.dt td,.dt th{white-space:normal}
+.foot{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.2rem}
+#dc .btn.pri{background:var(--brand);color:var(--bi);border-color:var(--brand)}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(1rem + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:.6rem 1rem;border-radius:.4rem;font-weight:700;display:none;z-index:9;max-width:92vw}
+#drop{position:fixed;inset:0;background:rgba(248,156,31,.95);color:#393a3c;font-size:1.5rem;font-weight:800;display:none;align-items:center;justify-content:center;z-index:8}
+@media (max-width:820px){.lay{grid-template-columns:1fr}.side{position:static;max-height:none}.tw{overflow-x:auto}table{min-width:920px}thead th{position:static}.cards{grid-template-columns:1fr}}
+
+:root{--fs:15px}html.big{--fs:19px}
+table{font-size:.95rem}td{height:2.4rem}
+.card h3{font-size:1.1rem}.kv dd{font-size:.9rem}.kv dt{font-size:.75rem}.job{font-size:.9rem}
+.tags .bd{font-size:.78rem;font-weight:700;border:1px solid;border-radius:.25rem;padding:0 .4rem}
+.tags .bd.ok{color:#0f7a4a;border-color:#9fd6bb;background:#eaf7f0}
+.tags .bd.w{color:#5b6470;border-color:#d5d9de;background:#f1f3f5}
+@media (prefers-color-scheme:dark){.tags .bd.ok{color:#7fe0b3;background:#12291f;border-color:#2c5a45}.tags .bd.w{color:#c3cad2;background:#2a2e33;border-color:#4a5058}}
+.key{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.6rem;background:var(--soft);border-radius:.6rem;padding:.8rem;margin-top:.7rem}
+.key small{display:block;color:var(--mute);font-size:.78rem}.key b{font-size:1.15rem;line-height:1.3}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.6rem;color:var(--mute);font-weight:700}
+.nav .btn:disabled{opacity:.35;cursor:default}
+#dc .pre{font-size:1.05rem;line-height:1.75}
+.dt td,.dt th{font-size:1rem}
+
+html.dense .tw table{font-size:.85rem}
+html.dense .tw td{height:1.75rem;padding:.1rem .45rem}
+html.dense .tw th{padding:.25rem .45rem}
+html.dense .lay{grid-template-columns:210px minmax(0,1fr);gap:.7rem;padding-top:.5rem}
+html.dense .side{font-size:.88rem;padding:.55rem}
+html.dense .cards{grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:.4rem}
+html.dense .card{padding:.4rem .55rem;gap:.15rem}
+html.dense .card h3{font-size:.95rem}
+html.dense .card .job+.tags{display:none}
+html.dense .hc{font-size:1rem}
+html.dense .kv{gap:.05rem .4rem}
+@media (max-width:820px){html.dense .lay{grid-template-columns:1fr}html.dense .cards{grid-template-columns:1fr 1fr}}
+#hov{position:fixed;z-index:7;width:340px;max-width:92vw;background:var(--card);color:var(--ink);border:2px solid var(--brand);border-radius:.5rem;box-shadow:0 8px 24px rgba(0,0,0,.28);padding:.7rem .8rem;font-size:.9rem;line-height:1.5;display:none;pointer-events:none}
+#hov .n{font-size:1.05rem;color:var(--ac)}
+#hov h5{margin:.5rem 0 .1rem;font-size:.75rem;color:var(--mute)}
+#hov p{margin:0;white-space:pre-line;overflow-wrap:anywhere}
+
+:root{--stk:calc(env(safe-area-inset-top,0px) + 5.6rem)}
+html{scroll-padding-top:calc(var(--stk) + 2rem)}
+.cr{display:flex;align-items:center;gap:.5rem;padding-top:.4rem;overflow-x:auto}
+.cr .chips{flex-wrap:nowrap;flex:none}.cr .chips button{white-space:nowrap}
+.cl{font-size:.75rem;color:var(--mute);font-weight:700;white-space:nowrap}
+#act button{border-color:var(--brand);color:var(--ac);background:var(--soft)}
+.pv{display:none}
+html.pvon .lay{grid-template-columns:210px minmax(0,1fr) 380px}
+html.pvon .pv{display:block;position:sticky;top:calc(var(--stk) + .6rem);max-height:calc(100vh - var(--stk) - 1.4rem);overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:.5rem;padding:.9rem}
+.pv .x,#dc #dz{display:none}
+.pv .dh h2{font-size:1.25rem}.pv .pre{font-size:.95rem;line-height:1.65}
+.ph{color:var(--mute);text-align:center;margin:2rem 0;line-height:1.8}
+tr.sel td{background:var(--soft)!important}
+tr.sel td:nth-child(2){box-shadow:inset 3px 0 0 var(--brand)}
+.card.sel{outline:2px solid var(--brand)}
+@media (max-width:1100px){html.pvon .lay{grid-template-columns:210px minmax(0,1fr)}html.pvon .pv{display:none}}
+@media (max-width:820px){html.pvon .lay{grid-template-columns:1fr}}
+html.pvon .tw th:nth-child(n+9),html.pvon .tw td:nth-child(n+9){display:none}
+html.pvon .tw thead th:nth-child(2){width:17%}html.pvon .tw thead th:nth-child(4){width:19%}html.pvon .tw thead th:nth-child(6){width:15%}html.pvon .tw thead th:nth-child(8){width:14%}
+@media (max-width:1100px){html.pvon .tw th:nth-child(n+9),html.pvon .tw td:nth-child(n+9){display:table-cell}}
+
+.info{display:flex;flex-wrap:wrap;gap:.2rem 1.5rem;padding-bottom:.65rem;font-size:.9rem;color:var(--mute)}
+.info b{color:var(--ac);margin-right:.4rem}
+.hd{padding-bottom:.3rem}
+.more summary{cursor:pointer;color:var(--ac);font-weight:700;margin:.2rem 0 .5rem}
+.more .grid{margin-bottom:.4rem}
+.dot{display:none}
+tbody tr:nth-child(even) td{background:none}
+tbody tr:hover td{background:var(--soft)}
+
+header{background:var(--brand);border-bottom:0}
+header h1,header #sub,.info,.info b{color:var(--bi)}
+#sub{opacity:.85}.info b{font-weight:800;margin-right:.45rem}
+header .btn{background:transparent;color:var(--bi);border-color:rgba(57,58,60,.55)}
+header label.btn{background:#393a3c;color:#fff;border-color:#393a3c}
+#favb.on,#dens.on,#pvb.on,.seg button.on{background:var(--dk);border-color:var(--dk);color:var(--dki)}
+.sbar{border-bottom-color:var(--line)}
+
+header{position:relative;overflow:hidden}
+header::after{content:"";position:absolute;right:20%;top:-30%;width:64px;height:170%;background:linear-gradient(180deg,#fff 0%,#fff 45%,#fff6bf 80%,#f6e58a 100%);transform:skewX(-8deg);opacity:.9;pointer-events:none}
+header .wrap{position:relative;z-index:1}
+.tag{margin:0;font-size:1rem;font-weight:500;color:var(--bi)}
+header h1{font-size:2rem;font-weight:900;letter-spacing:-.03em;line-height:1.15;margin:.1rem 0 .15rem}
+.hd{align-items:center}.acts{align-items:center}
+.cta{width:5.2rem;height:5.2rem;border-radius:50%;display:grid;place-items:center;text-align:center;background:#393a3c;color:#fff;font-weight:800;font-size:.95rem;line-height:1.3;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.cta:hover{background:#000}
+.info{gap:.4rem .6rem}
+.info span{background:#fff;color:#393a3c;border-radius:99px;padding:.15rem .85rem;font-size:.88rem}
+.info b{color:#b45f00}
+@media (max-width:820px){header::after{display:none}header h1{font-size:1.5rem}.cta{width:4.4rem;height:4.4rem;font-size:.85rem}}
+
+header{background:linear-gradient(90deg,#fbbf63 0,#f89c1f 7%,#f89c1f 93%,#fbb04a 100%)}
+header::after{display:none}
+.door{position:absolute;right:1.5%;top:0;height:100%;width:190px;pointer-events:none}
+.hd{display:grid;grid-template-columns:minmax(0,1.4fr) auto auto;gap:1rem 2.2rem;align-items:center;padding:1.3rem 215px 1.4rem 1rem}
+.ttl{min-width:0}
+.tag{font-size:1.05rem;margin-bottom:.2rem}
+header h1{font-size:2.5rem;font-weight:900;line-height:1.12;margin:0 0 .3rem}
+h1 .w{color:#fff;text-shadow:0 1px 3px rgba(57,58,60,.3)}
+#sub{font-size:.9rem;font-weight:500;opacity:1}
+.evt{display:grid;gap:.1rem;color:var(--bi);justify-items:start}
+.evt small{font-size:.75rem;font-weight:700;background:#fff;border-radius:99px;padding:.05rem .65rem;margin-bottom:.4rem}
+.evt b{font-size:1.8rem;font-weight:900;letter-spacing:-.03em;line-height:1.15}
+.evt span{font-size:.85rem}.evt strong{font-weight:800;margin-top:.4rem}
+.acts{flex-direction:column;gap:.5rem}
+.cta{width:6.2rem;height:6.2rem;font-size:1.02rem}
+@media (max-width:1100px){.hd{padding-right:1rem;grid-template-columns:minmax(0,1fr) auto}.door{display:none}.acts{grid-column:1/-1;flex-direction:row}}
+@media (max-width:820px){.hd{grid-template-columns:1fr}header h1{font-size:1.8rem}.evt b{font-size:1.4rem}.cta{width:4.8rem;height:4.8rem;font-size:.88rem}}
+.tags .bd.now{background:var(--dk);color:var(--dki);border-color:var(--dk)}
+.nw{font-style:normal;font-size:.7rem;background:var(--dk);color:var(--dki);border-radius:99px;padding:0 .4rem;margin-left:.35rem}
+.nw{margin:0 .35rem 0 0}
+
+.hd{grid-template-columns:minmax(0,1.4fr) auto auto;grid-template-areas:"ttl evt acts";padding:1.3rem 1rem 1.4rem}
+.ttl{grid-area:ttl}.evt{grid-area:evt}.acts{grid-area:acts;align-self:center}
+.dimg{position:absolute;top:0;left:50%;transform:translateX(-50%);height:100%;width:auto;object-fit:cover;pointer-events:none;user-select:none}
+@media (max-width:1100px){.hd{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"ttl evt" "acts acts"}.acts{grid-area:acts}.dimg{display:none}}
+@media (max-width:820px){.hd{grid-template-columns:1fr;grid-template-areas:"ttl" "evt" "acts"}}
 </style>
 </head>
 <body>
-<div class="wrap">
-<div class="panel">
-<h1>채용공고 이미지 만들기</h1>
-<label>상단 문구</label><input id="sub" value="7월 2주차 채용공고">
-<label>공고 제목</label><textarea id="title" rows="2">공영홈쇼핑
-2026 고령자 채용 공고</textarea>
-<div class="row">
-<div><label>모집 시작일</label><input id="s" value="9월21일"></div>
-<div><label>모집 마감일 <small>(빨간색)</small></label><input id="e" value="10월06일"></div>
+<header>
+<div class="wrap hd">
+  <div class="ttl"><p class="tag">내 일을 열자, 삶을 채우자</p><h1><span class="w">서울시</span> 중장년<br><span class="w">일자리박람회</span> 2026</h1><p id="sub"></p></div>
+  <img class="dimg" alt="" aria-hidden="true" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAO4AAADbCAIAAADlOzprAAAPkElEQVR42u1dy44kRxU9tzzr7ranX7MBFiy9sDG25wP8C/wc4oNsYYxBSCAElhAgT4894w0yIDN5WcQ7H1Vd1RFZN6rPtRUTfbsqI7v71MmTJ29EyH9+9WMwLIaEf2WcnM1ofMc4IxDXVUhIxwzEH+1+o4wzgMrSuNkx58fNM9l77zdudnDXPCFkTMJYMP3Dq/tbi8+kPyqKv+5cRxJmM+SGzGjcPOPG9a9GBscAzXK4yZkkaE7Hzd4cwZqBP/sozoybZwDI1XuEsslQBaCuKwJAXUYFUBWBQkXdt92rwl/WZbRAhnuNhk+EBkZUHXOk6gjWblxMxlUVADoeN5z1eNwC1mFcUWga9/r9jKEFgFy/H8/lrav3R0wvV++NfmeEslVWLi+1GSdJuKqX7IgRO05kQ2RH2cqOOtIaJTvKIjtubj5wb4gHkJsP4ns31x+Mf8Trn9X9nRHKZllZAutF/stYucgEQkRiRxF3DE0fg0DHCfqpq4DIzYeJyxUQ2dz8vBAN6UsA2JRfHj0IZdtaWUZaOVPPc7dEcvtRYlhgc/NRDk25+TCn3M3th6f0OyOUbcXm2fMcmpvbj3Owbm6f5/dBADa3H/OXRiivgEUAkNvnW747zTAIZWKRUCYWGYTy+licvoBYZDSE8ghexCLjaFDeC4uEI8MKlDfPnsvt882z50Qko9OQaWWcg7XrENmMjqE8KzYIbsYpQJngZpwslIlsxmlCmeBeJ4avPwOKGozZv+nw4rPYH33LVcyJYHjx6+I1Mjmcq7+7+7x4TTlD5Mknv7RTH/ek2S/9U3z9KYA3v+0P3MPXn9Z6mb446FA765VxeL3yJINi8tW2iVVLddInDeWd4I7Ixi5PuiFizMYx6pVDBkAG6DSLJEwKyceFISw/OSbzBWBF5mbkfHlAvXJoJB0D83P7tvK0ZDQ9M6dQ56abPF4oM3ax8uzcvpBJc/tGGmT73D4Erbzf3L5wNQBURnP77KB5Q9jYpGVPjRJ1q+RNmOscmVbyjPtHRATu/5Rx/0be9m+UnMn9KJMzQTYJ0B0J+vI3IJQZ22nZN4EmFZo3MaORmjVlNLxVXeNfEJk9zyhybtc0SnYmMxktMhQYjJ1a2fY6GIQy42CtbGsdDFNwJpStsnIP62CYsjCole2yMpzWHSnjJG+TZtUgadVpZQV2aWUU3VIr53SryxpdMdwZuu0jK9vWyvSVCeUT1cohY8ZXJpQZO2i5sCAiTmc1q5YLvJbrZz5UK4/09/iFhniZWtkoLfvGtq9MVmbcWysb95VffkEoMw7TygbXVyaUGdtZuZP1lamVGbtZ2b6vbOrZNVnZtlamr0xW7p6Vnb0QOdgTcsho5OAYOSunnEZPw/sVgZyjg6FFJv1fjBusES1ZWdXOAz+yslFaLiwI+spk5X5p2Tf0lcnKJ6KVze/bx2mqjN0ORhe+sp2bP0LZKivTV6ZWPhlW7sJX1pefU2Aw7qGV6SsTyieqlUPGTr2yEsqMrbRcWBCWfWUzzEytbJSWfWPeV+bTPsb9tDJ9ZUL5RLUy65UJ5e5Ymb4ytfLJsDLrlcnKJ6SVzfvK1MqMw7RyyJjxlZUOBmM7LRcWhGFf2Y7GoFY2Ssu+sV+vzKd9jHtpZfO+sh2xTCj3pZUN+spWsEyBYZaV40YiUaWGvURQ7kUi2aYiiBuQzO5Fgr33IpHlPVD8YDBy50co22XlXnxlI2qZAsO2Vu6hXpkTohgHaOWQMbS+shjRy4SyUVouLAjbvrIRVqZWNkrLvunBVx5sTO8jK9vWyn34ykIoM/bVyjZ9ZSWUGcus3Em9sprxMKiV7bJyP/XKSigzllnZ/5dzqX9+F6k0PtTzz/PS0z6Jx5AkaLN0NkpRdRwfDsanjFI+ZUT5tM9R9Z2JHUkoMPrSyiFjyVemVmZso+XCgrDuK1MrM5Zp2Tc9+MpKVmZs08r9+MpCX5mxv1a26Csrn/YxtrFyP74ytTJjByv3U69MrczYqZX7WF+ZWpmxt1YOGVO+svBpH2OZluNjNSSeXJhjBz/HLmbCTL7p3D7Ze24f8kx6OpjP7ROIhaVpCWWjtOwb+soUGCeilTupV+aEKMa+WtlkvbKY2L2PULbKyvSVqZVPhpXpKxPKJ8HK/dQrC0RfHt/BoMDoSyuHjDlfWQllxjwtFxZEB/XKx5fLFBhGadk33fjKSigzlrWyTLUyJloZ4fFeoZVll1ZOT/umWlnGWhmLWtk/77MwvY8Coy+tbNRXplZmLLNyZ74ytTJjmZW78pXJyowlVu6qXtnCAz9CuS+tHDL0lQnlXmg551eY95X15fEdDGplo7TsG/rKZOUT0cpcX5lQPlGtbNZXJpQZS6zcla9sAcvUynZZuS9f+egzVcnKtrVyP+tgHH1+H6Hcl1YOGXvrYKge+e6PUDZKy4UFYd9XNsDK1MpGadk3/fjKqoQyY1Yrd1WvbGF6HwVGX1qZvjKh3B0r9+crH/nxNaFslpUlsF7kv4yVi0ygZiSedreD4V4xcnB8Dp14GhJIPVokyACdWDmQ+2TcwqgWqGp2S6oSUN86TyhbZeX+1lfW5LKIZofW7Lwa5gnlvrRyyNjzlYe7LzbvDrkBs3KfUDZKyzm/og9fWePH6CgtoWyUlr1g9Rf2oEeXNKv7OuPLcIxFrZxYOQqHUhljor/zTNDKmvE0oINK7nxnbfs8oWxbK/dTryziJKyoE6+anD93FWmW9z8ioUxfuZKvrAodFJ6oAVXN+u3zhDJ95Tq+cjhZlaxCdM0+oUxfuY6vPNx9udHB34b6S8CqfUKZvnIlX1mciQHJjEFBeclomSeU6StX2rdPRbX0lXXBA26TJ5TpK1esV84/RjPub9M8izzN+sr91Svr3ZeqCh28mzFpm+bJyvSVK62D4Suf1T+aWb0llOkr1/KVRXUQHY6EZGpl+sr1fOVYhjEafp2WUKavXMdXVhVVdayc35at1ieU6SvX85Whfpvg4qRX6hPK9JWr+crDy99vrt6NrgtU1uwTyvSV666DoZnvgjX7hLJZX7m7emV3sRgyo3rVllCmr1zNV3az7o41jYRQpq9cz1f+5g9v6S/iMSQtRLpGn1Cmr1yvXlniR68cc5U+oUxfuZqvHIo6jqMwCGX6ytV8ZQBBwBQt0iepYZ5Qpq9czVcGoDoEls5apAK7dnlCmb5yNV/ZF4PKvFZvnSeU6StX85XxzR/hKuMWf6SGeUKZvnK9emUADthz92at84QyfeVqvrIfJc1smauXaJYnlOkr11wHQ6Aq8VXQ5MGgdZ5Qpq9cz1cGXA1Gvqrban1OU7XKyhL3+ohcKsXuJH7nkXxDEck3MNm+FwmQb0tS7kWC8V4ksrgXyWhcyKs/Aeqnk6zbkpXpK9f0laGDMzFm3N/GLaFMX7mer+zdQ513fxu3hDJ95Xq+sjsNHdzSsSu3hDJ95dq+cvDJ/Dy/tfqEMn3lur7yAB080t3qSGv16WCYZeVyV1OUToKUToJIuZtqsDaSJRG2To1GBpC9rVi6Prc08szsuHlGBPLtn8PUa/XEuVafrExfuaqvDEVYCmPlllC2rZV7q1dGVncZPk7+3jVNXmqTJ5TpK1f2lTWsfQ+/vWrWb5knlOkr1/SV5dVfwyVg7ZZQpq9c01dWqKqGK/+qLaFMX7mqrxywPn4YJwsPAevlCWX6ypXrlVWH+T0XFE3zhLJVVu503z4JnzGJr09t0zyhTF+5rq+MsGwcgruQ2qZ5Qpm+clVf+dVXadG46JOlfsM8oUxfuaqvDFUdnCQXiKqu1ieU6StX9ZV9iYeu3xLK9JXr+spIe6quG4QyfeX6vjKXdGH07ytD8e1XevmTWfdXF5bhrJInlOkrV/WV/VeK/LoiWj6ma5InlOkrV/WVJVugaKauGO3yhDJ95cr1ypKVLPO2j6zct6/sTYxMy+Yl843yhDJ95dq+8uu/4fJHW3+aJnlC2Sgtd+wrQwtreSpu2/Q549qqVs6Xf1tYuy3Nr85WiPPTrXetGZdmXE/XjJPxmnFYXDNuMtPb1cZlsma1lqxMX7myr6yuZNm/vmwh7fKEMn3l6r6yFzbBXQ4t2uYJZfrKlX1lefV3/ekwL/8V7fKEMn3lyr6yf9o3b8qgXZ5Qpq9c3VfWwlfOPeCWfUKZvnJlX1kl3FyGE8k+MGiXJ5TpK1f2lcNO1/7SkvKx3yZPKNvWyh3WK8t3/xyQSZe1+oQyfeXa9cphIolmhUUr9All+sqVfWVF6ZYJ1ukTyvSVUbteGXGna3cK6/QJZfrK1X3l9GlYsyWU6StX9pUB4PU/9O1n87uqN2tZGWfWVw4Fb4knF/YEwWRPECztRSJ770WCPJN2X53diyScSVTlcbfTNfpkZfrK1X1lKAZgCAvTZ9eTln1Cmb5y7XUw8s/AikEo01eu7yv7HUnWVMqEMn3lRr5y2O0Uq7W87bPLyn63UERlrKqRJ/OMm1HnXq1xFQpVn0EqjQjpOIqWYkBDfaaiyGj2XK0cN8/EweT1C8UA1cbtoHijw/9Uf9DhB7IyfeX6vnKwQCpO3QvzX+ON5USME8r0lev7ymkpjAPdGyxPsOZtX3++crf1yv4lOrMUy/h+TcMSLRXsDkKZvnJ9X1m+u5OLq9EHQs+eLjFwlc8+oUxfub6vLG/ePPnL7/T86XD2DiB69o4C8t/vd1yFDr92kZXpKz/YV9azSwiG86d6dglAz58+QB/LIe8KVyFC2Sor2/OVnULQ88vh7BKSo1Ye/gOTlU+YlY9Zr6xnlxAZzi71/NIfOnRGev4BnFqVlamVrWvl9r6ynvv7s+H8yvVnULuDRsnKjL21csgc6ivj4koVenGlF1c5jvcGU249iAFWJpTN0nJhQRzkK+v5FSDDxZWeXwPQ0h17KCmaYOWg87mtjmVa3stXHi6uoRgurvXCofb6kOEOo1E9IisjbBdFVravlSe+8nBxI3CovfF/zIvrh8FIHvQmoVZm7NLKw8WNU8YagOvhK1Ma1Qfg6SBGpFZmLP5ZAlj17duE2m1cWFGtdqqVycpdoLaupGynleucFn3lE0btlIDm8XYkRiQrE7UPoi2dwlofjCdqZaI2oLY+cO/lG1Arg77y3qhtSLcrkFdTrUxf+TGKhAfSlrYAMegrE7XH4GNdgjV95ccB5c5QS61MVj7mDdmj1cp1Tutx+8q2bsiOppXpK/fGyqcjEiprZfrKhrXyY0cttfJeb7TmKxeVX/E0v3sR28cL28UFVvJvT6AwszjLAmJk4Qizx5yRPVJOjJ0/QrkETL6ui6TTXFpQBvf4DQjk39//i2THOIHgSp6ME4n/Axg5Z7bC6aTgAAAAAElFTkSuQmCC">
+  <div class="evt"><small id="dday">행사 안내</small><b>2026. 10. 20.(화)</b><span>10:00–17:00</span><strong>양재 aT센터 제1전시장</strong><span>양재시민의숲역</span></div>
+  <div class="acts">
+    <label class="cta" for="file">엑셀 파일<br>불러오기</label>
+    <input id="file" type="file" accept=".xlsx,.xls,.csv" hidden>
+    <button class="btn" id="big" aria-pressed="false">큰 글씨</button>
+  </div>
 </div>
-<label>근무형태 <small>한 줄에 한 항목</small></label>
-<textarea id="type" rows="3">모집 : 11명
-연령 : 1960 - 1965년생
-경력 무관</textarea>
-<label>근무처</label><input id="place" value="서울시 OOO구">
-<label>급여 <small>한 줄에 한 항목</small></label>
-<textarea id="pay" rows="2">프로그램 코디네이터 연 3,800만원
-전기 설비: 연 5,000만원</textarea>
-<label>직무 / 담당업무 <small>한 줄에 한 항목</small></label>
-<textarea id="duty" rows="4">프로그램 코디네이터 (PC), 전기설비
-프로그램 코디네이터 (PC) - 스튜디오 통제 등 방송 중 운영지원 수행
-전기설비 - 전반 전기시설 관리</textarea>
-<div class="row">
-<div><label>상담 전화</label><input id="tel" value="02-460-5150"></div>
-<div><label>메인 색상</label><input id="color" type="color" value="#0b4fa8"></div>
+</header>
+<div class="sbar"><div class="wrap tb">
+  <input id="q" type="search" placeholder="회사명·직무·지역 검색 (예: 요양, 강남, 경비)" aria-label="검색">
+  <span id="cnt"></span>
+  <select id="sort" aria-label="정렬"><option value="no">기본 순서</option><option value="head">채용인원 많은 순</option><option value="name">기업명 가나다순</option><option value="views">조회 많은 순</option></select>
+  <button class="btn" id="favb">☆ 관심기업</button>
+  <button class="btn on" id="pvb" title="선택한 회사를 오른쪽에서 미리 보기">미리보기</button>
+  <button class="btn on" id="dens" title="한 화면에 더 많이 보기">촘촘히</button>
+  <div class="seg"><button data-v="table" class="on">표</button><button data-v="card">카드</button></div>
 </div>
-<label>기관명 <small>(하단 바 오른쪽)</small></label><input id="org" value="중장년취업사관학교">
-<label>하단 로고 <small>(서울시 50플러스 중장년 취업사관학교 로고 파일, 올리면 기관명 대신 표시)</small></label><input id="logo" type="file" accept="image/*">
-<label>지원 QR 링크 <small>(입력하면 QR이 자동 생성돼요)</small></label><input id="qr" placeholder="https://...">
-<button id="dl">PNG 저장 (왼쪽 90° 회전, 1920×1080)</button>
-<button class="sub" id="reset">입력 내용 초기화</button>
-<div id="msg" role="status"></div>
+  <div class="wrap cr"><span class="cl">빠른 조건</span><div id="qf" class="chips"></div><span class="cl">적용 중</span><div id="act" class="chips"></div></div>
 </div>
-<div class="prev">
-<canvas id="cv" width="1080" height="1920" aria-label="채용공고 미리보기"></canvas>
-<div class="hint">입력하면 바로 반영돼요. 글이 길면 크기가 자동으로 줄어듭니다.</div>
+<div class="wrap lay">
+  <details id="side" class="side" open><summary>필터</summary>
+    <button class="btn" id="rst">필터 초기화</button>
+    <span class="lb">관(구역)</span><div id="tabs" class="tabs"></div>
+    <span class="lb">직무</span><div id="chips" class="chips"></div>
+    <span class="lb">조건</span>
+    <div class="grid">
+      <label>내 나이 (지원 가능한 곳만)<input id="age" type="number" inputmode="numeric" min="30" max="99" placeholder="예: 62"></label>
+      <label>성별<select id="sex"><option value="">전체</option><option value="F">여성</option><option value="M">남성</option></select></label>
+      <span id="dyn"></span>
+    </div>
+    <details class="more"><summary>상세 조건 더 보기 (근무일·시간 등)</summary><div id="more" class="grid"></div></details>
+  </details>
+  <section id="out"></section>
+  <aside id="pv" class="pv" aria-label="미리보기"></aside>
 </div>
-</div>
+<dialog id="dlg"><div id="dc"></div></dialog>
+<div id="pv"></div>
+<div id="hov"></div>
+<div id="toast" role="status"></div>
+<div id="drop">엑셀 파일을 여기에 놓으세요</div>
 <script>
-//---------------------------------------------------------------------
-//
-// QR Code Generator for JavaScript
-//
-// Copyright (c) 2009 Kazuhiko Arase
-//
-// URL: http://www.d-project.com/
-//
-// Licensed under the MIT license:
-//  http://www.opensource.org/licenses/mit-license.php
-//
-// The word 'QR Code' is registered trademark of
-// DENSO WAVE INCORPORATED
-//  http://www.denso-wave.com/qrcode/faqpatent-e.html
-//
-//---------------------------------------------------------------------
-
-var qrcode = function() {
-
-  //---------------------------------------------------------------------
-  // qrcode
-  //---------------------------------------------------------------------
-
-  /**
-   * qrcode
-   * @param typeNumber 1 to 40
-   * @param errorCorrectionLevel 'L','M','Q','H'
-   */
-  var qrcode = function(typeNumber, errorCorrectionLevel) {
-
-    var PAD0 = 0xEC;
-    var PAD1 = 0x11;
-
-    var _typeNumber = typeNumber;
-    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
-    var _modules = null;
-    var _moduleCount = 0;
-    var _dataCache = null;
-    var _dataList = [];
-
-    var _this = {};
-
-    var makeImpl = function(test, maskPattern) {
-
-      _moduleCount = _typeNumber * 4 + 17;
-      _modules = function(moduleCount) {
-        var modules = new Array(moduleCount);
-        for (var row = 0; row < moduleCount; row += 1) {
-          modules[row] = new Array(moduleCount);
-          for (var col = 0; col < moduleCount; col += 1) {
-            modules[row][col] = null;
-          }
-        }
-        return modules;
-      }(_moduleCount);
-
-      setupPositionProbePattern(0, 0);
-      setupPositionProbePattern(_moduleCount - 7, 0);
-      setupPositionProbePattern(0, _moduleCount - 7);
-      setupPositionAdjustPattern();
-      setupTimingPattern();
-      setupTypeInfo(test, maskPattern);
-
-      if (_typeNumber >= 7) {
-        setupTypeNumber(test);
-      }
-
-      if (_dataCache == null) {
-        _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
-      }
-
-      mapData(_dataCache, maskPattern);
-    };
-
-    var setupPositionProbePattern = function(row, col) {
-
-      for (var r = -1; r <= 7; r += 1) {
-
-        if (row + r <= -1 || _moduleCount <= row + r) continue;
-
-        for (var c = -1; c <= 7; c += 1) {
-
-          if (col + c <= -1 || _moduleCount <= col + c) continue;
-
-          if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
-              || (0 <= c && c <= 6 && (r == 0 || r == 6) )
-              || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
-            _modules[row + r][col + c] = true;
-          } else {
-            _modules[row + r][col + c] = false;
-          }
-        }
-      }
-    };
-
-    var getBestMaskPattern = function() {
-
-      var minLostPoint = 0;
-      var pattern = 0;
-
-      for (var i = 0; i < 8; i += 1) {
-
-        makeImpl(true, i);
-
-        var lostPoint = QRUtil.getLostPoint(_this);
-
-        if (i == 0 || minLostPoint > lostPoint) {
-          minLostPoint = lostPoint;
-          pattern = i;
-        }
-      }
-
-      return pattern;
-    };
-
-    var setupTimingPattern = function() {
-
-      for (var r = 8; r < _moduleCount - 8; r += 1) {
-        if (_modules[r][6] != null) {
-          continue;
-        }
-        _modules[r][6] = (r % 2 == 0);
-      }
-
-      for (var c = 8; c < _moduleCount - 8; c += 1) {
-        if (_modules[6][c] != null) {
-          continue;
-        }
-        _modules[6][c] = (c % 2 == 0);
-      }
-    };
-
-    var setupPositionAdjustPattern = function() {
-
-      var pos = QRUtil.getPatternPosition(_typeNumber);
-
-      for (var i = 0; i < pos.length; i += 1) {
-
-        for (var j = 0; j < pos.length; j += 1) {
-
-          var row = pos[i];
-          var col = pos[j];
-
-          if (_modules[row][col] != null) {
-            continue;
-          }
-
-          for (var r = -2; r <= 2; r += 1) {
-
-            for (var c = -2; c <= 2; c += 1) {
-
-              if (r == -2 || r == 2 || c == -2 || c == 2
-                  || (r == 0 && c == 0) ) {
-                _modules[row + r][col + c] = true;
-              } else {
-                _modules[row + r][col + c] = false;
-              }
-            }
-          }
-        }
-      }
-    };
-
-    var setupTypeNumber = function(test) {
-
-      var bits = QRUtil.getBCHTypeNumber(_typeNumber);
-
-      for (var i = 0; i < 18; i += 1) {
-        var mod = (!test && ( (bits >> i) & 1) == 1);
-        _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
-      }
-
-      for (var i = 0; i < 18; i += 1) {
-        var mod = (!test && ( (bits >> i) & 1) == 1);
-        _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
-      }
-    };
-
-    var setupTypeInfo = function(test, maskPattern) {
-
-      var data = (_errorCorrectionLevel << 3) | maskPattern;
-      var bits = QRUtil.getBCHTypeInfo(data);
-
-      // vertical
-      for (var i = 0; i < 15; i += 1) {
-
-        var mod = (!test && ( (bits >> i) & 1) == 1);
-
-        if (i < 6) {
-          _modules[i][8] = mod;
-        } else if (i < 8) {
-          _modules[i + 1][8] = mod;
-        } else {
-          _modules[_moduleCount - 15 + i][8] = mod;
-        }
-      }
-
-      // horizontal
-      for (var i = 0; i < 15; i += 1) {
-
-        var mod = (!test && ( (bits >> i) & 1) == 1);
-
-        if (i < 8) {
-          _modules[8][_moduleCount - i - 1] = mod;
-        } else if (i < 9) {
-          _modules[8][15 - i - 1 + 1] = mod;
-        } else {
-          _modules[8][15 - i - 1] = mod;
-        }
-      }
-
-      // fixed module
-      _modules[_moduleCount - 8][8] = (!test);
-    };
-
-    var mapData = function(data, maskPattern) {
-
-      var inc = -1;
-      var row = _moduleCount - 1;
-      var bitIndex = 7;
-      var byteIndex = 0;
-      var maskFunc = QRUtil.getMaskFunction(maskPattern);
-
-      for (var col = _moduleCount - 1; col > 0; col -= 2) {
-
-        if (col == 6) col -= 1;
-
-        while (true) {
-
-          for (var c = 0; c < 2; c += 1) {
-
-            if (_modules[row][col - c] == null) {
-
-              var dark = false;
-
-              if (byteIndex < data.length) {
-                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
-              }
-
-              var mask = maskFunc(row, col - c);
-
-              if (mask) {
-                dark = !dark;
-              }
-
-              _modules[row][col - c] = dark;
-              bitIndex -= 1;
-
-              if (bitIndex == -1) {
-                byteIndex += 1;
-                bitIndex = 7;
-              }
-            }
-          }
-
-          row += inc;
-
-          if (row < 0 || _moduleCount <= row) {
-            row -= inc;
-            inc = -inc;
-            break;
-          }
-        }
-      }
-    };
-
-    var createBytes = function(buffer, rsBlocks) {
-
-      var offset = 0;
-
-      var maxDcCount = 0;
-      var maxEcCount = 0;
-
-      var dcdata = new Array(rsBlocks.length);
-      var ecdata = new Array(rsBlocks.length);
-
-      for (var r = 0; r < rsBlocks.length; r += 1) {
-
-        var dcCount = rsBlocks[r].dataCount;
-        var ecCount = rsBlocks[r].totalCount - dcCount;
-
-        maxDcCount = Math.max(maxDcCount, dcCount);
-        maxEcCount = Math.max(maxEcCount, ecCount);
-
-        dcdata[r] = new Array(dcCount);
-
-        for (var i = 0; i < dcdata[r].length; i += 1) {
-          dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
-        }
-        offset += dcCount;
-
-        var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
-        var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
-
-        var modPoly = rawPoly.mod(rsPoly);
-        ecdata[r] = new Array(rsPoly.getLength() - 1);
-        for (var i = 0; i < ecdata[r].length; i += 1) {
-          var modIndex = i + modPoly.getLength() - ecdata[r].length;
-          ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
-        }
-      }
-
-      var totalCodeCount = 0;
-      for (var i = 0; i < rsBlocks.length; i += 1) {
-        totalCodeCount += rsBlocks[i].totalCount;
-      }
-
-      var data = new Array(totalCodeCount);
-      var index = 0;
-
-      for (var i = 0; i < maxDcCount; i += 1) {
-        for (var r = 0; r < rsBlocks.length; r += 1) {
-          if (i < dcdata[r].length) {
-            data[index] = dcdata[r][i];
-            index += 1;
-          }
-        }
-      }
-
-      for (var i = 0; i < maxEcCount; i += 1) {
-        for (var r = 0; r < rsBlocks.length; r += 1) {
-          if (i < ecdata[r].length) {
-            data[index] = ecdata[r][i];
-            index += 1;
-          }
-        }
-      }
-
-      return data;
-    };
-
-    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
-
-      var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
-
-      var buffer = qrBitBuffer();
-
-      for (var i = 0; i < dataList.length; i += 1) {
-        var data = dataList[i];
-        buffer.put(data.getMode(), 4);
-        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
-        data.write(buffer);
-      }
-
-      // calc num max data.
-      var totalDataCount = 0;
-      for (var i = 0; i < rsBlocks.length; i += 1) {
-        totalDataCount += rsBlocks[i].dataCount;
-      }
-
-      if (buffer.getLengthInBits() > totalDataCount * 8) {
-        throw 'code length overflow. ('
-          + buffer.getLengthInBits()
-          + '>'
-          + totalDataCount * 8
-          + ')';
-      }
-
-      // end code
-      if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
-        buffer.put(0, 4);
-      }
-
-      // padding
-      while (buffer.getLengthInBits() % 8 != 0) {
-        buffer.putBit(false);
-      }
-
-      // padding
-      while (true) {
-
-        if (buffer.getLengthInBits() >= totalDataCount * 8) {
-          break;
-        }
-        buffer.put(PAD0, 8);
-
-        if (buffer.getLengthInBits() >= totalDataCount * 8) {
-          break;
-        }
-        buffer.put(PAD1, 8);
-      }
-
-      return createBytes(buffer, rsBlocks);
-    };
-
-    _this.addData = function(data, mode) {
-
-      mode = mode || 'Byte';
-
-      var newData = null;
-
-      switch(mode) {
-      case 'Numeric' :
-        newData = qrNumber(data);
-        break;
-      case 'Alphanumeric' :
-        newData = qrAlphaNum(data);
-        break;
-      case 'Byte' :
-        newData = qr8BitByte(data);
-        break;
-      case 'Kanji' :
-        newData = qrKanji(data);
-        break;
-      default :
-        throw 'mode:' + mode;
-      }
-
-      _dataList.push(newData);
-      _dataCache = null;
-    };
-
-    _this.isDark = function(row, col) {
-      if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
-        throw row + ',' + col;
-      }
-      return _modules[row][col];
-    };
-
-    _this.getModuleCount = function() {
-      return _moduleCount;
-    };
-
-    _this.make = function() {
-      if (_typeNumber < 1) {
-        var typeNumber = 1;
-
-        for (; typeNumber < 40; typeNumber++) {
-          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
-          var buffer = qrBitBuffer();
-
-          for (var i = 0; i < _dataList.length; i++) {
-            var data = _dataList[i];
-            buffer.put(data.getMode(), 4);
-            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
-            data.write(buffer);
-          }
-
-          var totalDataCount = 0;
-          for (var i = 0; i < rsBlocks.length; i++) {
-            totalDataCount += rsBlocks[i].dataCount;
-          }
-
-          if (buffer.getLengthInBits() <= totalDataCount * 8) {
-            break;
-          }
-        }
-
-        _typeNumber = typeNumber;
-      }
-
-      makeImpl(false, getBestMaskPattern() );
-    };
-
-    _this.createTableTag = function(cellSize, margin) {
-
-      cellSize = cellSize || 2;
-      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
-
-      var qrHtml = '';
-
-      qrHtml += '<table style="';
-      qrHtml += ' border-width: 0px; border-style: none;';
-      qrHtml += ' border-collapse: collapse;';
-      qrHtml += ' padding: 0px; margin: ' + margin + 'px;';
-      qrHtml += '">';
-      qrHtml += '<tbody>';
-
-      for (var r = 0; r < _this.getModuleCount(); r += 1) {
-
-        qrHtml += '<tr>';
-
-        for (var c = 0; c < _this.getModuleCount(); c += 1) {
-          qrHtml += '<td style="';
-          qrHtml += ' border-width: 0px; border-style: none;';
-          qrHtml += ' border-collapse: collapse;';
-          qrHtml += ' padding: 0px; margin: 0px;';
-          qrHtml += ' width: ' + cellSize + 'px;';
-          qrHtml += ' height: ' + cellSize + 'px;';
-          qrHtml += ' background-color: ';
-          qrHtml += _this.isDark(r, c)? '#000000' : '#ffffff';
-          qrHtml += ';';
-          qrHtml += '"/>';
-        }
-
-        qrHtml += '</tr>';
-      }
-
-      qrHtml += '</tbody>';
-      qrHtml += '</table>';
-
-      return qrHtml;
-    };
-
-    _this.createSvgTag = function(cellSize, margin, alt, title) {
-
-      var opts = {};
-      if (typeof arguments[0] == 'object') {
-        // Called by options.
-        opts = arguments[0];
-        // overwrite cellSize and margin.
-        cellSize = opts.cellSize;
-        margin = opts.margin;
-        alt = opts.alt;
-        title = opts.title;
-      }
-
-      cellSize = cellSize || 2;
-      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
-
-      // Compose alt property surrogate
-      alt = (typeof alt === 'string') ? {text: alt} : alt || {};
-      alt.text = alt.text || null;
-      alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
-
-      // Compose title property surrogate
-      title = (typeof title === 'string') ? {text: title} : title || {};
-      title.text = title.text || null;
-      title.id = (title.text) ? title.id || 'qrcode-title' : null;
-
-      var size = _this.getModuleCount() * cellSize + margin * 2;
-      var c, mc, r, mr, qrSvg='', rect;
-
-      rect = 'l' + cellSize + ',0 0,' + cellSize +
-        ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
-
-      qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
-      qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
-      qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
-      qrSvg += ' preserveAspectRatio="xMinYMin meet"';
-      qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' +
-          escapeXml([title.id, alt.id].join(' ').trim() ) + '"' : '';
-      qrSvg += '>';
-      qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' +
-          escapeXml(title.text) + '</title>' : '';
-      qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' +
-          escapeXml(alt.text) + '</description>' : '';
-      qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
-      qrSvg += '<path d="';
-
-      for (r = 0; r < _this.getModuleCount(); r += 1) {
-        mr = r * cellSize + margin;
-        for (c = 0; c < _this.getModuleCount(); c += 1) {
-          if (_this.isDark(r, c) ) {
-            mc = c*cellSize+margin;
-            qrSvg += 'M' + mc + ',' + mr + rect;
-          }
-        }
-      }
-
-      qrSvg += '" stroke="transparent" fill="black"/>';
-      qrSvg += '</svg>';
-
-      return qrSvg;
-    };
-
-    _this.createDataURL = function(cellSize, margin) {
-
-      cellSize = cellSize || 2;
-      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
-
-      var size = _this.getModuleCount() * cellSize + margin * 2;
-      var min = margin;
-      var max = size - margin;
-
-      return createDataURL(size, size, function(x, y) {
-        if (min <= x && x < max && min <= y && y < max) {
-          var c = Math.floor( (x - min) / cellSize);
-          var r = Math.floor( (y - min) / cellSize);
-          return _this.isDark(r, c)? 0 : 1;
-        } else {
-          return 1;
-        }
-      } );
-    };
-
-    _this.createImgTag = function(cellSize, margin, alt) {
-
-      cellSize = cellSize || 2;
-      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
-
-      var size = _this.getModuleCount() * cellSize + margin * 2;
-
-      var img = '';
-      img += '<img';
-      img += '\u0020src="';
-      img += _this.createDataURL(cellSize, margin);
-      img += '"';
-      img += '\u0020width="';
-      img += size;
-      img += '"';
-      img += '\u0020height="';
-      img += size;
-      img += '"';
-      if (alt) {
-        img += '\u0020alt="';
-        img += escapeXml(alt);
-        img += '"';
-      }
-      img += '/>';
-
-      return img;
-    };
-
-    var escapeXml = function(s) {
-      var escaped = '';
-      for (var i = 0; i < s.length; i += 1) {
-        var c = s.charAt(i);
-        switch(c) {
-        case '<': escaped += '&lt;'; break;
-        case '>': escaped += '&gt;'; break;
-        case '&': escaped += '&amp;'; break;
-        case '"': escaped += '&quot;'; break;
-        default : escaped += c; break;
-        }
-      }
-      return escaped;
-    };
-
-    var _createHalfASCII = function(margin) {
-      var cellSize = 1;
-      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
-
-      var size = _this.getModuleCount() * cellSize + margin * 2;
-      var min = margin;
-      var max = size - margin;
-
-      var y, x, r1, r2, p;
-
-      var blocks = {
-        '██': '█',
-        '█ ': '▀',
-        ' █': '▄',
-        '  ': ' '
-      };
-
-      var blocksLastLineNoMargin = {
-        '██': '▀',
-        '█ ': '▀',
-        ' █': ' ',
-        '  ': ' '
-      };
-
-      var ascii = '';
-      for (y = 0; y < size; y += 2) {
-        r1 = Math.floor((y - min) / cellSize);
-        r2 = Math.floor((y + 1 - min) / cellSize);
-        for (x = 0; x < size; x += 1) {
-          p = '█';
-
-          if (min <= x && x < max && min <= y && y < max && _this.isDark(r1, Math.floor((x - min) / cellSize))) {
-            p = ' ';
-          }
-
-          if (min <= x && x < max && min <= y+1 && y+1 < max && _this.isDark(r2, Math.floor((x - min) / cellSize))) {
-            p += ' ';
-          }
-          else {
-            p += '█';
-          }
-
-          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
-          ascii += (margin < 1 && y+1 >= max) ? blocksLastLineNoMargin[p] : blocks[p];
-        }
-
-        ascii += '\n';
-      }
-
-      if (size % 2 && margin > 0) {
-        return ascii.substring(0, ascii.length - size - 1) + Array(size+1).join('▀');
-      }
-
-      return ascii.substring(0, ascii.length-1);
-    };
-
-    _this.createASCII = function(cellSize, margin) {
-      cellSize = cellSize || 1;
-
-      if (cellSize < 2) {
-        return _createHalfASCII(margin);
-      }
-
-      cellSize -= 1;
-      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
-
-      var size = _this.getModuleCount() * cellSize + margin * 2;
-      var min = margin;
-      var max = size - margin;
-
-      var y, x, r, p;
-
-      var white = Array(cellSize+1).join('██');
-      var black = Array(cellSize+1).join('  ');
-
-      var ascii = '';
-      var line = '';
-      for (y = 0; y < size; y += 1) {
-        r = Math.floor( (y - min) / cellSize);
-        line = '';
-        for (x = 0; x < size; x += 1) {
-          p = 1;
-
-          if (min <= x && x < max && min <= y && y < max && _this.isDark(r, Math.floor((x - min) / cellSize))) {
-            p = 0;
-          }
-
-          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
-          line += p ? white : black;
-        }
-
-        for (r = 0; r < cellSize; r += 1) {
-          ascii += line + '\n';
-        }
-      }
-
-      return ascii.substring(0, ascii.length-1);
-    };
-
-    _this.renderTo2dContext = function(context, cellSize) {
-      cellSize = cellSize || 2;
-      var length = _this.getModuleCount();
-      for (var row = 0; row < length; row++) {
-        for (var col = 0; col < length; col++) {
-          context.fillStyle = _this.isDark(row, col) ? 'black' : 'white';
-          context.fillRect(row * cellSize, col * cellSize, cellSize, cellSize);
-        }
-      }
-    }
-
-    return _this;
-  };
-
-  //---------------------------------------------------------------------
-  // qrcode.stringToBytes
-  //---------------------------------------------------------------------
-
-  qrcode.stringToBytesFuncs = {
-    'default' : function(s) {
-      var bytes = [];
-      for (var i = 0; i < s.length; i += 1) {
-        var c = s.charCodeAt(i);
-        bytes.push(c & 0xff);
-      }
-      return bytes;
-    }
-  };
-
-  qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
-
-  //---------------------------------------------------------------------
-  // qrcode.createStringToBytes
-  //---------------------------------------------------------------------
-
-  /**
-   * @param unicodeData base64 string of byte array.
-   * [16bit Unicode],[16bit Bytes], ...
-   * @param numChars
-   */
-  qrcode.createStringToBytes = function(unicodeData, numChars) {
-
-    // create conversion map.
-
-    var unicodeMap = function() {
-
-      var bin = base64DecodeInputStream(unicodeData);
-      var read = function() {
-        var b = bin.read();
-        if (b == -1) throw 'eof';
-        return b;
-      };
-
-      var count = 0;
-      var unicodeMap = {};
-      while (true) {
-        var b0 = bin.read();
-        if (b0 == -1) break;
-        var b1 = read();
-        var b2 = read();
-        var b3 = read();
-        var k = String.fromCharCode( (b0 << 8) | b1);
-        var v = (b2 << 8) | b3;
-        unicodeMap[k] = v;
-        count += 1;
-      }
-      if (count != numChars) {
-        throw count + ' != ' + numChars;
-      }
-
-      return unicodeMap;
-    }();
-
-    var unknownChar = '?'.charCodeAt(0);
-
-    return function(s) {
-      var bytes = [];
-      for (var i = 0; i < s.length; i += 1) {
-        var c = s.charCodeAt(i);
-        if (c < 128) {
-          bytes.push(c);
-        } else {
-          var b = unicodeMap[s.charAt(i)];
-          if (typeof b == 'number') {
-            if ( (b & 0xff) == b) {
-              // 1byte
-              bytes.push(b);
-            } else {
-              // 2bytes
-              bytes.push(b >>> 8);
-              bytes.push(b & 0xff);
-            }
-          } else {
-            bytes.push(unknownChar);
-          }
-        }
-      }
-      return bytes;
-    };
-  };
-
-  //---------------------------------------------------------------------
-  // QRMode
-  //---------------------------------------------------------------------
-
-  var QRMode = {
-    MODE_NUMBER :    1 << 0,
-    MODE_ALPHA_NUM : 1 << 1,
-    MODE_8BIT_BYTE : 1 << 2,
-    MODE_KANJI :     1 << 3
-  };
-
-  //---------------------------------------------------------------------
-  // QRErrorCorrectionLevel
-  //---------------------------------------------------------------------
-
-  var QRErrorCorrectionLevel = {
-    L : 1,
-    M : 0,
-    Q : 3,
-    H : 2
-  };
-
-  //---------------------------------------------------------------------
-  // QRMaskPattern
-  //---------------------------------------------------------------------
-
-  var QRMaskPattern = {
-    PATTERN000 : 0,
-    PATTERN001 : 1,
-    PATTERN010 : 2,
-    PATTERN011 : 3,
-    PATTERN100 : 4,
-    PATTERN101 : 5,
-    PATTERN110 : 6,
-    PATTERN111 : 7
-  };
-
-  //---------------------------------------------------------------------
-  // QRUtil
-  //---------------------------------------------------------------------
-
-  var QRUtil = function() {
-
-    var PATTERN_POSITION_TABLE = [
-      [],
-      [6, 18],
-      [6, 22],
-      [6, 26],
-      [6, 30],
-      [6, 34],
-      [6, 22, 38],
-      [6, 24, 42],
-      [6, 26, 46],
-      [6, 28, 50],
-      [6, 30, 54],
-      [6, 32, 58],
-      [6, 34, 62],
-      [6, 26, 46, 66],
-      [6, 26, 48, 70],
-      [6, 26, 50, 74],
-      [6, 30, 54, 78],
-      [6, 30, 56, 82],
-      [6, 30, 58, 86],
-      [6, 34, 62, 90],
-      [6, 28, 50, 72, 94],
-      [6, 26, 50, 74, 98],
-      [6, 30, 54, 78, 102],
-      [6, 28, 54, 80, 106],
-      [6, 32, 58, 84, 110],
-      [6, 30, 58, 86, 114],
-      [6, 34, 62, 90, 118],
-      [6, 26, 50, 74, 98, 122],
-      [6, 30, 54, 78, 102, 126],
-      [6, 26, 52, 78, 104, 130],
-      [6, 30, 56, 82, 108, 134],
-      [6, 34, 60, 86, 112, 138],
-      [6, 30, 58, 86, 114, 142],
-      [6, 34, 62, 90, 118, 146],
-      [6, 30, 54, 78, 102, 126, 150],
-      [6, 24, 50, 76, 102, 128, 154],
-      [6, 28, 54, 80, 106, 132, 158],
-      [6, 32, 58, 84, 110, 136, 162],
-      [6, 26, 54, 82, 110, 138, 166],
-      [6, 30, 58, 86, 114, 142, 170]
-    ];
-    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
-    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
-    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
-
-    var _this = {};
-
-    var getBCHDigit = function(data) {
-      var digit = 0;
-      while (data != 0) {
-        digit += 1;
-        data >>>= 1;
-      }
-      return digit;
-    };
-
-    _this.getBCHTypeInfo = function(data) {
-      var d = data << 10;
-      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
-        d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15) ) );
-      }
-      return ( (data << 10) | d) ^ G15_MASK;
-    };
-
-    _this.getBCHTypeNumber = function(data) {
-      var d = data << 12;
-      while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
-        d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18) ) );
-      }
-      return (data << 12) | d;
-    };
-
-    _this.getPatternPosition = function(typeNumber) {
-      return PATTERN_POSITION_TABLE[typeNumber - 1];
-    };
-
-    _this.getMaskFunction = function(maskPattern) {
-
-      switch (maskPattern) {
-
-      case QRMaskPattern.PATTERN000 :
-        return function(i, j) { return (i + j) % 2 == 0; };
-      case QRMaskPattern.PATTERN001 :
-        return function(i, j) { return i % 2 == 0; };
-      case QRMaskPattern.PATTERN010 :
-        return function(i, j) { return j % 3 == 0; };
-      case QRMaskPattern.PATTERN011 :
-        return function(i, j) { return (i + j) % 3 == 0; };
-      case QRMaskPattern.PATTERN100 :
-        return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
-      case QRMaskPattern.PATTERN101 :
-        return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
-      case QRMaskPattern.PATTERN110 :
-        return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
-      case QRMaskPattern.PATTERN111 :
-        return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
-
-      default :
-        throw 'bad maskPattern:' + maskPattern;
-      }
-    };
-
-    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
-      var a = qrPolynomial([1], 0);
-      for (var i = 0; i < errorCorrectLength; i += 1) {
-        a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0) );
-      }
-      return a;
-    };
-
-    _this.getLengthInBits = function(mode, type) {
-
-      if (1 <= type && type < 10) {
-
-        // 1 - 9
-
-        switch(mode) {
-        case QRMode.MODE_NUMBER    : return 10;
-        case QRMode.MODE_ALPHA_NUM : return 9;
-        case QRMode.MODE_8BIT_BYTE : return 8;
-        case QRMode.MODE_KANJI     : return 8;
-        default :
-          throw 'mode:' + mode;
-        }
-
-      } else if (type < 27) {
-
-        // 10 - 26
-
-        switch(mode) {
-        case QRMode.MODE_NUMBER    : return 12;
-        case QRMode.MODE_ALPHA_NUM : return 11;
-        case QRMode.MODE_8BIT_BYTE : return 16;
-        case QRMode.MODE_KANJI     : return 10;
-        default :
-          throw 'mode:' + mode;
-        }
-
-      } else if (type < 41) {
-
-        // 27 - 40
-
-        switch(mode) {
-        case QRMode.MODE_NUMBER    : return 14;
-        case QRMode.MODE_ALPHA_NUM : return 13;
-        case QRMode.MODE_8BIT_BYTE : return 16;
-        case QRMode.MODE_KANJI     : return 12;
-        default :
-          throw 'mode:' + mode;
-        }
-
-      } else {
-        throw 'type:' + type;
-      }
-    };
-
-    _this.getLostPoint = function(qrcode) {
-
-      var moduleCount = qrcode.getModuleCount();
-
-      var lostPoint = 0;
-
-      // LEVEL1
-
-      for (var row = 0; row < moduleCount; row += 1) {
-        for (var col = 0; col < moduleCount; col += 1) {
-
-          var sameCount = 0;
-          var dark = qrcode.isDark(row, col);
-
-          for (var r = -1; r <= 1; r += 1) {
-
-            if (row + r < 0 || moduleCount <= row + r) {
-              continue;
-            }
-
-            for (var c = -1; c <= 1; c += 1) {
-
-              if (col + c < 0 || moduleCount <= col + c) {
-                continue;
-              }
-
-              if (r == 0 && c == 0) {
-                continue;
-              }
-
-              if (dark == qrcode.isDark(row + r, col + c) ) {
-                sameCount += 1;
-              }
-            }
-          }
-
-          if (sameCount > 5) {
-            lostPoint += (3 + sameCount - 5);
-          }
-        }
-      };
-
-      // LEVEL2
-
-      for (var row = 0; row < moduleCount - 1; row += 1) {
-        for (var col = 0; col < moduleCount - 1; col += 1) {
-          var count = 0;
-          if (qrcode.isDark(row, col) ) count += 1;
-          if (qrcode.isDark(row + 1, col) ) count += 1;
-          if (qrcode.isDark(row, col + 1) ) count += 1;
-          if (qrcode.isDark(row + 1, col + 1) ) count += 1;
-          if (count == 0 || count == 4) {
-            lostPoint += 3;
-          }
-        }
-      }
-
-      // LEVEL3
-
-      for (var row = 0; row < moduleCount; row += 1) {
-        for (var col = 0; col < moduleCount - 6; col += 1) {
-          if (qrcode.isDark(row, col)
-              && !qrcode.isDark(row, col + 1)
-              &&  qrcode.isDark(row, col + 2)
-              &&  qrcode.isDark(row, col + 3)
-              &&  qrcode.isDark(row, col + 4)
-              && !qrcode.isDark(row, col + 5)
-              &&  qrcode.isDark(row, col + 6) ) {
-            lostPoint += 40;
-          }
-        }
-      }
-
-      for (var col = 0; col < moduleCount; col += 1) {
-        for (var row = 0; row < moduleCount - 6; row += 1) {
-          if (qrcode.isDark(row, col)
-              && !qrcode.isDark(row + 1, col)
-              &&  qrcode.isDark(row + 2, col)
-              &&  qrcode.isDark(row + 3, col)
-              &&  qrcode.isDark(row + 4, col)
-              && !qrcode.isDark(row + 5, col)
-              &&  qrcode.isDark(row + 6, col) ) {
-            lostPoint += 40;
-          }
-        }
-      }
-
-      // LEVEL4
-
-      var darkCount = 0;
-
-      for (var col = 0; col < moduleCount; col += 1) {
-        for (var row = 0; row < moduleCount; row += 1) {
-          if (qrcode.isDark(row, col) ) {
-            darkCount += 1;
-          }
-        }
-      }
-
-      var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
-      lostPoint += ratio * 10;
-
-      return lostPoint;
-    };
-
-    return _this;
-  }();
-
-  //---------------------------------------------------------------------
-  // QRMath
-  //---------------------------------------------------------------------
-
-  var QRMath = function() {
-
-    var EXP_TABLE = new Array(256);
-    var LOG_TABLE = new Array(256);
-
-    // initialize tables
-    for (var i = 0; i < 8; i += 1) {
-      EXP_TABLE[i] = 1 << i;
-    }
-    for (var i = 8; i < 256; i += 1) {
-      EXP_TABLE[i] = EXP_TABLE[i - 4]
-        ^ EXP_TABLE[i - 5]
-        ^ EXP_TABLE[i - 6]
-        ^ EXP_TABLE[i - 8];
-    }
-    for (var i = 0; i < 255; i += 1) {
-      LOG_TABLE[EXP_TABLE[i] ] = i;
-    }
-
-    var _this = {};
-
-    _this.glog = function(n) {
-
-      if (n < 1) {
-        throw 'glog(' + n + ')';
-      }
-
-      return LOG_TABLE[n];
-    };
-
-    _this.gexp = function(n) {
-
-      while (n < 0) {
-        n += 255;
-      }
-
-      while (n >= 256) {
-        n -= 255;
-      }
-
-      return EXP_TABLE[n];
-    };
-
-    return _this;
-  }();
-
-  //---------------------------------------------------------------------
-  // qrPolynomial
-  //---------------------------------------------------------------------
-
-  function qrPolynomial(num, shift) {
-
-    if (typeof num.length == 'undefined') {
-      throw num.length + '/' + shift;
-    }
-
-    var _num = function() {
-      var offset = 0;
-      while (offset < num.length && num[offset] == 0) {
-        offset += 1;
-      }
-      var _num = new Array(num.length - offset + shift);
-      for (var i = 0; i < num.length - offset; i += 1) {
-        _num[i] = num[i + offset];
-      }
-      return _num;
-    }();
-
-    var _this = {};
-
-    _this.getAt = function(index) {
-      return _num[index];
-    };
-
-    _this.getLength = function() {
-      return _num.length;
-    };
-
-    _this.multiply = function(e) {
-
-      var num = new Array(_this.getLength() + e.getLength() - 1);
-
-      for (var i = 0; i < _this.getLength(); i += 1) {
-        for (var j = 0; j < e.getLength(); j += 1) {
-          num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
-        }
-      }
-
-      return qrPolynomial(num, 0);
-    };
-
-    _this.mod = function(e) {
-
-      if (_this.getLength() - e.getLength() < 0) {
-        return _this;
-      }
-
-      var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
-
-      var num = new Array(_this.getLength() );
-      for (var i = 0; i < _this.getLength(); i += 1) {
-        num[i] = _this.getAt(i);
-      }
-
-      for (var i = 0; i < e.getLength(); i += 1) {
-        num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
-      }
-
-      // recursive call
-      return qrPolynomial(num, 0).mod(e);
-    };
-
-    return _this;
-  };
-
-  //---------------------------------------------------------------------
-  // QRRSBlock
-  //---------------------------------------------------------------------
-
-  var QRRSBlock = function() {
-
-    var RS_BLOCK_TABLE = [
-
-      // L
-      // M
-      // Q
-      // H
-
-      // 1
-      [1, 26, 19],
-      [1, 26, 16],
-      [1, 26, 13],
-      [1, 26, 9],
-
-      // 2
-      [1, 44, 34],
-      [1, 44, 28],
-      [1, 44, 22],
-      [1, 44, 16],
-
-      // 3
-      [1, 70, 55],
-      [1, 70, 44],
-      [2, 35, 17],
-      [2, 35, 13],
-
-      // 4
-      [1, 100, 80],
-      [2, 50, 32],
-      [2, 50, 24],
-      [4, 25, 9],
-
-      // 5
-      [1, 134, 108],
-      [2, 67, 43],
-      [2, 33, 15, 2, 34, 16],
-      [2, 33, 11, 2, 34, 12],
-
-      // 6
-      [2, 86, 68],
-      [4, 43, 27],
-      [4, 43, 19],
-      [4, 43, 15],
-
-      // 7
-      [2, 98, 78],
-      [4, 49, 31],
-      [2, 32, 14, 4, 33, 15],
-      [4, 39, 13, 1, 40, 14],
-
-      // 8
-      [2, 121, 97],
-      [2, 60, 38, 2, 61, 39],
-      [4, 40, 18, 2, 41, 19],
-      [4, 40, 14, 2, 41, 15],
-
-      // 9
-      [2, 146, 116],
-      [3, 58, 36, 2, 59, 37],
-      [4, 36, 16, 4, 37, 17],
-      [4, 36, 12, 4, 37, 13],
-
-      // 10
-      [2, 86, 68, 2, 87, 69],
-      [4, 69, 43, 1, 70, 44],
-      [6, 43, 19, 2, 44, 20],
-      [6, 43, 15, 2, 44, 16],
-
-      // 11
-      [4, 101, 81],
-      [1, 80, 50, 4, 81, 51],
-      [4, 50, 22, 4, 51, 23],
-      [3, 36, 12, 8, 37, 13],
-
-      // 12
-      [2, 116, 92, 2, 117, 93],
-      [6, 58, 36, 2, 59, 37],
-      [4, 46, 20, 6, 47, 21],
-      [7, 42, 14, 4, 43, 15],
-
-      // 13
-      [4, 133, 107],
-      [8, 59, 37, 1, 60, 38],
-      [8, 44, 20, 4, 45, 21],
-      [12, 33, 11, 4, 34, 12],
-
-      // 14
-      [3, 145, 115, 1, 146, 116],
-      [4, 64, 40, 5, 65, 41],
-      [11, 36, 16, 5, 37, 17],
-      [11, 36, 12, 5, 37, 13],
-
-      // 15
-      [5, 109, 87, 1, 110, 88],
-      [5, 65, 41, 5, 66, 42],
-      [5, 54, 24, 7, 55, 25],
-      [11, 36, 12, 7, 37, 13],
-
-      // 16
-      [5, 122, 98, 1, 123, 99],
-      [7, 73, 45, 3, 74, 46],
-      [15, 43, 19, 2, 44, 20],
-      [3, 45, 15, 13, 46, 16],
-
-      // 17
-      [1, 135, 107, 5, 136, 108],
-      [10, 74, 46, 1, 75, 47],
-      [1, 50, 22, 15, 51, 23],
-      [2, 42, 14, 17, 43, 15],
-
-      // 18
-      [5, 150, 120, 1, 151, 121],
-      [9, 69, 43, 4, 70, 44],
-      [17, 50, 22, 1, 51, 23],
-      [2, 42, 14, 19, 43, 15],
-
-      // 19
-      [3, 141, 113, 4, 142, 114],
-      [3, 70, 44, 11, 71, 45],
-      [17, 47, 21, 4, 48, 22],
-      [9, 39, 13, 16, 40, 14],
-
-      // 20
-      [3, 135, 107, 5, 136, 108],
-      [3, 67, 41, 13, 68, 42],
-      [15, 54, 24, 5, 55, 25],
-      [15, 43, 15, 10, 44, 16],
-
-      // 21
-      [4, 144, 116, 4, 145, 117],
-      [17, 68, 42],
-      [17, 50, 22, 6, 51, 23],
-      [19, 46, 16, 6, 47, 17],
-
-      // 22
-      [2, 139, 111, 7, 140, 112],
-      [17, 74, 46],
-      [7, 54, 24, 16, 55, 25],
-      [34, 37, 13],
-
-      // 23
-      [4, 151, 121, 5, 152, 122],
-      [4, 75, 47, 14, 76, 48],
-      [11, 54, 24, 14, 55, 25],
-      [16, 45, 15, 14, 46, 16],
-
-      // 24
-      [6, 147, 117, 4, 148, 118],
-      [6, 73, 45, 14, 74, 46],
-      [11, 54, 24, 16, 55, 25],
-      [30, 46, 16, 2, 47, 17],
-
-      // 25
-      [8, 132, 106, 4, 133, 107],
-      [8, 75, 47, 13, 76, 48],
-      [7, 54, 24, 22, 55, 25],
-      [22, 45, 15, 13, 46, 16],
-
-      // 26
-      [10, 142, 114, 2, 143, 115],
-      [19, 74, 46, 4, 75, 47],
-      [28, 50, 22, 6, 51, 23],
-      [33, 46, 16, 4, 47, 17],
-
-      // 27
-      [8, 152, 122, 4, 153, 123],
-      [22, 73, 45, 3, 74, 46],
-      [8, 53, 23, 26, 54, 24],
-      [12, 45, 15, 28, 46, 16],
-
-      // 28
-      [3, 147, 117, 10, 148, 118],
-      [3, 73, 45, 23, 74, 46],
-      [4, 54, 24, 31, 55, 25],
-      [11, 45, 15, 31, 46, 16],
-
-      // 29
-      [7, 146, 116, 7, 147, 117],
-      [21, 73, 45, 7, 74, 46],
-      [1, 53, 23, 37, 54, 24],
-      [19, 45, 15, 26, 46, 16],
-
-      // 30
-      [5, 145, 115, 10, 146, 116],
-      [19, 75, 47, 10, 76, 48],
-      [15, 54, 24, 25, 55, 25],
-      [23, 45, 15, 25, 46, 16],
-
-      // 31
-      [13, 145, 115, 3, 146, 116],
-      [2, 74, 46, 29, 75, 47],
-      [42, 54, 24, 1, 55, 25],
-      [23, 45, 15, 28, 46, 16],
-
-      // 32
-      [17, 145, 115],
-      [10, 74, 46, 23, 75, 47],
-      [10, 54, 24, 35, 55, 25],
-      [19, 45, 15, 35, 46, 16],
-
-      // 33
-      [17, 145, 115, 1, 146, 116],
-      [14, 74, 46, 21, 75, 47],
-      [29, 54, 24, 19, 55, 25],
-      [11, 45, 15, 46, 46, 16],
-
-      // 34
-      [13, 145, 115, 6, 146, 116],
-      [14, 74, 46, 23, 75, 47],
-      [44, 54, 24, 7, 55, 25],
-      [59, 46, 16, 1, 47, 17],
-
-      // 35
-      [12, 151, 121, 7, 152, 122],
-      [12, 75, 47, 26, 76, 48],
-      [39, 54, 24, 14, 55, 25],
-      [22, 45, 15, 41, 46, 16],
-
-      // 36
-      [6, 151, 121, 14, 152, 122],
-      [6, 75, 47, 34, 76, 48],
-      [46, 54, 24, 10, 55, 25],
-      [2, 45, 15, 64, 46, 16],
-
-      // 37
-      [17, 152, 122, 4, 153, 123],
-      [29, 74, 46, 14, 75, 47],
-      [49, 54, 24, 10, 55, 25],
-      [24, 45, 15, 46, 46, 16],
-
-      // 38
-      [4, 152, 122, 18, 153, 123],
-      [13, 74, 46, 32, 75, 47],
-      [48, 54, 24, 14, 55, 25],
-      [42, 45, 15, 32, 46, 16],
-
-      // 39
-      [20, 147, 117, 4, 148, 118],
-      [40, 75, 47, 7, 76, 48],
-      [43, 54, 24, 22, 55, 25],
-      [10, 45, 15, 67, 46, 16],
-
-      // 40
-      [19, 148, 118, 6, 149, 119],
-      [18, 75, 47, 31, 76, 48],
-      [34, 54, 24, 34, 55, 25],
-      [20, 45, 15, 61, 46, 16]
-    ];
-
-    var qrRSBlock = function(totalCount, dataCount) {
-      var _this = {};
-      _this.totalCount = totalCount;
-      _this.dataCount = dataCount;
-      return _this;
-    };
-
-    var _this = {};
-
-    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
-
-      switch(errorCorrectionLevel) {
-      case QRErrorCorrectionLevel.L :
-        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
-      case QRErrorCorrectionLevel.M :
-        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
-      case QRErrorCorrectionLevel.Q :
-        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
-      case QRErrorCorrectionLevel.H :
-        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
-      default :
-        return undefined;
-      }
-    };
-
-    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
-
-      var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
-
-      if (typeof rsBlock == 'undefined') {
-        throw 'bad rs block @ typeNumber:' + typeNumber +
-            '/errorCorrectionLevel:' + errorCorrectionLevel;
-      }
-
-      var length = rsBlock.length / 3;
-
-      var list = [];
-
-      for (var i = 0; i < length; i += 1) {
-
-        var count = rsBlock[i * 3 + 0];
-        var totalCount = rsBlock[i * 3 + 1];
-        var dataCount = rsBlock[i * 3 + 2];
-
-        for (var j = 0; j < count; j += 1) {
-          list.push(qrRSBlock(totalCount, dataCount) );
-        }
-      }
-
-      return list;
-    };
-
-    return _this;
-  }();
-
-  //---------------------------------------------------------------------
-  // qrBitBuffer
-  //---------------------------------------------------------------------
-
-  var qrBitBuffer = function() {
-
-    var _buffer = [];
-    var _length = 0;
-
-    var _this = {};
-
-    _this.getBuffer = function() {
-      return _buffer;
-    };
-
-    _this.getAt = function(index) {
-      var bufIndex = Math.floor(index / 8);
-      return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
-    };
-
-    _this.put = function(num, length) {
-      for (var i = 0; i < length; i += 1) {
-        _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
-      }
-    };
-
-    _this.getLengthInBits = function() {
-      return _length;
-    };
-
-    _this.putBit = function(bit) {
-
-      var bufIndex = Math.floor(_length / 8);
-      if (_buffer.length <= bufIndex) {
-        _buffer.push(0);
-      }
-
-      if (bit) {
-        _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
-      }
-
-      _length += 1;
-    };
-
-    return _this;
-  };
-
-  //---------------------------------------------------------------------
-  // qrNumber
-  //---------------------------------------------------------------------
-
-  var qrNumber = function(data) {
-
-    var _mode = QRMode.MODE_NUMBER;
-    var _data = data;
-
-    var _this = {};
-
-    _this.getMode = function() {
-      return _mode;
-    };
-
-    _this.getLength = function(buffer) {
-      return _data.length;
-    };
-
-    _this.write = function(buffer) {
-
-      var data = _data;
-
-      var i = 0;
-
-      while (i + 2 < data.length) {
-        buffer.put(strToNum(data.substring(i, i + 3) ), 10);
-        i += 3;
-      }
-
-      if (i < data.length) {
-        if (data.length - i == 1) {
-          buffer.put(strToNum(data.substring(i, i + 1) ), 4);
-        } else if (data.length - i == 2) {
-          buffer.put(strToNum(data.substring(i, i + 2) ), 7);
-        }
-      }
-    };
-
-    var strToNum = function(s) {
-      var num = 0;
-      for (var i = 0; i < s.length; i += 1) {
-        num = num * 10 + chatToNum(s.charAt(i) );
-      }
-      return num;
-    };
-
-    var chatToNum = function(c) {
-      if ('0' <= c && c <= '9') {
-        return c.charCodeAt(0) - '0'.charCodeAt(0);
-      }
-      throw 'illegal char :' + c;
-    };
-
-    return _this;
-  };
-
-  //---------------------------------------------------------------------
-  // qrAlphaNum
-  //---------------------------------------------------------------------
-
-  var qrAlphaNum = function(data) {
-
-    var _mode = QRMode.MODE_ALPHA_NUM;
-    var _data = data;
-
-    var _this = {};
-
-    _this.getMode = function() {
-      return _mode;
-    };
-
-    _this.getLength = function(buffer) {
-      return _data.length;
-    };
-
-    _this.write = function(buffer) {
-
-      var s = _data;
-
-      var i = 0;
-
-      while (i + 1 < s.length) {
-        buffer.put(
-          getCode(s.charAt(i) ) * 45 +
-          getCode(s.charAt(i + 1) ), 11);
-        i += 2;
-      }
-
-      if (i < s.length) {
-        buffer.put(getCode(s.charAt(i) ), 6);
-      }
-    };
-
-    var getCode = function(c) {
-
-      if ('0' <= c && c <= '9') {
-        return c.charCodeAt(0) - '0'.charCodeAt(0);
-      } else if ('A' <= c && c <= 'Z') {
-        return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
-      } else {
-        switch (c) {
-        case ' ' : return 36;
-        case '$' : return 37;
-        case '%' : return 38;
-        case '*' : return 39;
-        case '+' : return 40;
-        case '-' : return 41;
-        case '.' : return 42;
-        case '/' : return 43;
-        case ':' : return 44;
-        default :
-          throw 'illegal char :' + c;
-        }
-      }
-    };
-
-    return _this;
-  };
-
-  //---------------------------------------------------------------------
-  // qr8BitByte
-  //---------------------------------------------------------------------
-
-  var qr8BitByte = function(data) {
-
-    var _mode = QRMode.MODE_8BIT_BYTE;
-    var _data = data;
-    var _bytes = qrcode.stringToBytes(data);
-
-    var _this = {};
-
-    _this.getMode = function() {
-      return _mode;
-    };
-
-    _this.getLength = function(buffer) {
-      return _bytes.length;
-    };
-
-    _this.write = function(buffer) {
-      for (var i = 0; i < _bytes.length; i += 1) {
-        buffer.put(_bytes[i], 8);
-      }
-    };
-
-    return _this;
-  };
-
-  //---------------------------------------------------------------------
-  // qrKanji
-  //---------------------------------------------------------------------
-
-  var qrKanji = function(data) {
-
-    var _mode = QRMode.MODE_KANJI;
-    var _data = data;
-
-    var stringToBytes = qrcode.stringToBytesFuncs['SJIS'];
-    if (!stringToBytes) {
-      throw 'sjis not supported.';
-    }
-    !function(c, code) {
-      // self test for sjis support.
-      var test = stringToBytes(c);
-      if (test.length != 2 || ( (test[0] << 8) | test[1]) != code) {
-        throw 'sjis not supported.';
-      }
-    }('\u53cb', 0x9746);
-
-    var _bytes = stringToBytes(data);
-
-    var _this = {};
-
-    _this.getMode = function() {
-      return _mode;
-    };
-
-    _this.getLength = function(buffer) {
-      return ~~(_bytes.length / 2);
-    };
-
-    _this.write = function(buffer) {
-
-      var data = _bytes;
-
-      var i = 0;
-
-      while (i + 1 < data.length) {
-
-        var c = ( (0xff & data[i]) << 8) | (0xff & data[i + 1]);
-
-        if (0x8140 <= c && c <= 0x9FFC) {
-          c -= 0x8140;
-        } else if (0xE040 <= c && c <= 0xEBBF) {
-          c -= 0xC140;
-        } else {
-          throw 'illegal char at ' + (i + 1) + '/' + c;
-        }
-
-        c = ( (c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
-
-        buffer.put(c, 13);
-
-        i += 2;
-      }
-
-      if (i < data.length) {
-        throw 'illegal char at ' + (i + 1);
-      }
-    };
-
-    return _this;
-  };
-
-  //=====================================================================
-  // GIF Support etc.
-  //
-
-  //---------------------------------------------------------------------
-  // byteArrayOutputStream
-  //---------------------------------------------------------------------
-
-  var byteArrayOutputStream = function() {
-
-    var _bytes = [];
-
-    var _this = {};
-
-    _this.writeByte = function(b) {
-      _bytes.push(b & 0xff);
-    };
-
-    _this.writeShort = function(i) {
-      _this.writeByte(i);
-      _this.writeByte(i >>> 8);
-    };
-
-    _this.writeBytes = function(b, off, len) {
-      off = off || 0;
-      len = len || b.length;
-      for (var i = 0; i < len; i += 1) {
-        _this.writeByte(b[i + off]);
-      }
-    };
-
-    _this.writeString = function(s) {
-      for (var i = 0; i < s.length; i += 1) {
-        _this.writeByte(s.charCodeAt(i) );
-      }
-    };
-
-    _this.toByteArray = function() {
-      return _bytes;
-    };
-
-    _this.toString = function() {
-      var s = '';
-      s += '[';
-      for (var i = 0; i < _bytes.length; i += 1) {
-        if (i > 0) {
-          s += ',';
-        }
-        s += _bytes[i];
-      }
-      s += ']';
-      return s;
-    };
-
-    return _this;
-  };
-
-  //---------------------------------------------------------------------
-  // base64EncodeOutputStream
-  //---------------------------------------------------------------------
-
-  var base64EncodeOutputStream = function() {
-
-    var _buffer = 0;
-    var _buflen = 0;
-    var _length = 0;
-    var _base64 = '';
-
-    var _this = {};
-
-    var writeEncoded = function(b) {
-      _base64 += String.fromCharCode(encode(b & 0x3f) );
-    };
-
-    var encode = function(n) {
-      if (n < 0) {
-        // error.
-      } else if (n < 26) {
-        return 0x41 + n;
-      } else if (n < 52) {
-        return 0x61 + (n - 26);
-      } else if (n < 62) {
-        return 0x30 + (n - 52);
-      } else if (n == 62) {
-        return 0x2b;
-      } else if (n == 63) {
-        return 0x2f;
-      }
-      throw 'n:' + n;
-    };
-
-    _this.writeByte = function(n) {
-
-      _buffer = (_buffer << 8) | (n & 0xff);
-      _buflen += 8;
-      _length += 1;
-
-      while (_buflen >= 6) {
-        writeEncoded(_buffer >>> (_buflen - 6) );
-        _buflen -= 6;
-      }
-    };
-
-    _this.flush = function() {
-
-      if (_buflen > 0) {
-        writeEncoded(_buffer << (6 - _buflen) );
-        _buffer = 0;
-        _buflen = 0;
-      }
-
-      if (_length % 3 != 0) {
-        // padding
-        var padlen = 3 - _length % 3;
-        for (var i = 0; i < padlen; i += 1) {
-          _base64 += '=';
-        }
-      }
-    };
-
-    _this.toString = function() {
-      return _base64;
-    };
-
-    return _this;
-  };
-
-  //---------------------------------------------------------------------
-  // base64DecodeInputStream
-  //---------------------------------------------------------------------
-
-  var base64DecodeInputStream = function(str) {
-
-    var _str = str;
-    var _pos = 0;
-    var _buffer = 0;
-    var _buflen = 0;
-
-    var _this = {};
-
-    _this.read = function() {
-
-      while (_buflen < 8) {
-
-        if (_pos >= _str.length) {
-          if (_buflen == 0) {
-            return -1;
-          }
-          throw 'unexpected end of file./' + _buflen;
-        }
-
-        var c = _str.charAt(_pos);
-        _pos += 1;
-
-        if (c == '=') {
-          _buflen = 0;
-          return -1;
-        } else if (c.match(/^\s$/) ) {
-          // ignore if whitespace.
-          continue;
-        }
-
-        _buffer = (_buffer << 6) | decode(c.charCodeAt(0) );
-        _buflen += 6;
-      }
-
-      var n = (_buffer >>> (_buflen - 8) ) & 0xff;
-      _buflen -= 8;
-      return n;
-    };
-
-    var decode = function(c) {
-      if (0x41 <= c && c <= 0x5a) {
-        return c - 0x41;
-      } else if (0x61 <= c && c <= 0x7a) {
-        return c - 0x61 + 26;
-      } else if (0x30 <= c && c <= 0x39) {
-        return c - 0x30 + 52;
-      } else if (c == 0x2b) {
-        return 62;
-      } else if (c == 0x2f) {
-        return 63;
-      } else {
-        throw 'c:' + c;
-      }
-    };
-
-    return _this;
-  };
-
-  //---------------------------------------------------------------------
-  // gifImage (B/W)
-  //---------------------------------------------------------------------
-
-  var gifImage = function(width, height) {
-
-    var _width = width;
-    var _height = height;
-    var _data = new Array(width * height);
-
-    var _this = {};
-
-    _this.setPixel = function(x, y, pixel) {
-      _data[y * _width + x] = pixel;
-    };
-
-    _this.write = function(out) {
-
-      //---------------------------------
-      // GIF Signature
-
-      out.writeString('GIF87a');
-
-      //---------------------------------
-      // Screen Descriptor
-
-      out.writeShort(_width);
-      out.writeShort(_height);
-
-      out.writeByte(0x80); // 2bit
-      out.writeByte(0);
-      out.writeByte(0);
-
-      //---------------------------------
-      // Global Color Map
-
-      // black
-      out.writeByte(0x00);
-      out.writeByte(0x00);
-      out.writeByte(0x00);
-
-      // white
-      out.writeByte(0xff);
-      out.writeByte(0xff);
-      out.writeByte(0xff);
-
-      //---------------------------------
-      // Image Descriptor
-
-      out.writeString(',');
-      out.writeShort(0);
-      out.writeShort(0);
-      out.writeShort(_width);
-      out.writeShort(_height);
-      out.writeByte(0);
-
-      //---------------------------------
-      // Local Color Map
-
-      //---------------------------------
-      // Raster Data
-
-      var lzwMinCodeSize = 2;
-      var raster = getLZWRaster(lzwMinCodeSize);
-
-      out.writeByte(lzwMinCodeSize);
-
-      var offset = 0;
-
-      while (raster.length - offset > 255) {
-        out.writeByte(255);
-        out.writeBytes(raster, offset, 255);
-        offset += 255;
-      }
-
-      out.writeByte(raster.length - offset);
-      out.writeBytes(raster, offset, raster.length - offset);
-      out.writeByte(0x00);
-
-      //---------------------------------
-      // GIF Terminator
-      out.writeString(';');
-    };
-
-    var bitOutputStream = function(out) {
-
-      var _out = out;
-      var _bitLength = 0;
-      var _bitBuffer = 0;
-
-      var _this = {};
-
-      _this.write = function(data, length) {
-
-        if ( (data >>> length) != 0) {
-          throw 'length over';
-        }
-
-        while (_bitLength + length >= 8) {
-          _out.writeByte(0xff & ( (data << _bitLength) | _bitBuffer) );
-          length -= (8 - _bitLength);
-          data >>>= (8 - _bitLength);
-          _bitBuffer = 0;
-          _bitLength = 0;
-        }
-
-        _bitBuffer = (data << _bitLength) | _bitBuffer;
-        _bitLength = _bitLength + length;
-      };
-
-      _this.flush = function() {
-        if (_bitLength > 0) {
-          _out.writeByte(_bitBuffer);
-        }
-      };
-
-      return _this;
-    };
-
-    var getLZWRaster = function(lzwMinCodeSize) {
-
-      var clearCode = 1 << lzwMinCodeSize;
-      var endCode = (1 << lzwMinCodeSize) + 1;
-      var bitLength = lzwMinCodeSize + 1;
-
-      // Setup LZWTable
-      var table = lzwTable();
-
-      for (var i = 0; i < clearCode; i += 1) {
-        table.add(String.fromCharCode(i) );
-      }
-      table.add(String.fromCharCode(clearCode) );
-      table.add(String.fromCharCode(endCode) );
-
-      var byteOut = byteArrayOutputStream();
-      var bitOut = bitOutputStream(byteOut);
-
-      // clear code
-      bitOut.write(clearCode, bitLength);
-
-      var dataIndex = 0;
-
-      var s = String.fromCharCode(_data[dataIndex]);
-      dataIndex += 1;
-
-      while (dataIndex < _data.length) {
-
-        var c = String.fromCharCode(_data[dataIndex]);
-        dataIndex += 1;
-
-        if (table.contains(s + c) ) {
-
-          s = s + c;
-
-        } else {
-
-          bitOut.write(table.indexOf(s), bitLength);
-
-          if (table.size() < 0xfff) {
-
-            if (table.size() == (1 << bitLength) ) {
-              bitLength += 1;
-            }
-
-            table.add(s + c);
-          }
-
-          s = c;
-        }
-      }
-
-      bitOut.write(table.indexOf(s), bitLength);
-
-      // end code
-      bitOut.write(endCode, bitLength);
-
-      bitOut.flush();
-
-      return byteOut.toByteArray();
-    };
-
-    var lzwTable = function() {
-
-      var _map = {};
-      var _size = 0;
-
-      var _this = {};
-
-      _this.add = function(key) {
-        if (_this.contains(key) ) {
-          throw 'dup key:' + key;
-        }
-        _map[key] = _size;
-        _size += 1;
-      };
-
-      _this.size = function() {
-        return _size;
-      };
-
-      _this.indexOf = function(key) {
-        return _map[key];
-      };
-
-      _this.contains = function(key) {
-        return typeof _map[key] != 'undefined';
-      };
-
-      return _this;
-    };
-
-    return _this;
-  };
-
-  var createDataURL = function(width, height, getPixel) {
-    var gif = gifImage(width, height);
-    for (var y = 0; y < height; y += 1) {
-      for (var x = 0; x < width; x += 1) {
-        gif.setPixel(x, y, getPixel(x, y) );
-      }
-    }
-
-    var b = byteArrayOutputStream();
-    gif.write(b);
-
-    var base64 = base64EncodeOutputStream();
-    var bytes = b.toByteArray();
-    for (var i = 0; i < bytes.length; i += 1) {
-      base64.writeByte(bytes[i]);
-    }
-    base64.flush();
-
-    return 'data:image/gif;base64,' + base64;
-  };
-
-  //---------------------------------------------------------------------
-  // returns qrcode function.
-
-  return qrcode;
-}();
-
-// multibyte support
-!function() {
-
-  qrcode.stringToBytesFuncs['UTF-8'] = function(s) {
-    // http://stackoverflow.com/questions/18729405/how-to-convert-utf8-string-to-byte-array
-    function toUTF8Array(str) {
-      var utf8 = [];
-      for (var i=0; i < str.length; i++) {
-        var charcode = str.charCodeAt(i);
-        if (charcode < 0x80) utf8.push(charcode);
-        else if (charcode < 0x800) {
-          utf8.push(0xc0 | (charcode >> 6),
-              0x80 | (charcode & 0x3f));
-        }
-        else if (charcode < 0xd800 || charcode >= 0xe000) {
-          utf8.push(0xe0 | (charcode >> 12),
-              0x80 | ((charcode>>6) & 0x3f),
-              0x80 | (charcode & 0x3f));
-        }
-        // surrogate pair
-        else {
-          i++;
-          // UTF-16 encodes 0x10000-0x10FFFF by
-          // subtracting 0x10000 and splitting the
-          // 20 bits of 0x0-0xFFFFF into two halves
-          charcode = 0x10000 + (((charcode & 0x3ff)<<10)
-            | (str.charCodeAt(i) & 0x3ff));
-          utf8.push(0xf0 | (charcode >>18),
-              0x80 | ((charcode>>12) & 0x3f),
-              0x80 | ((charcode>>6) & 0x3f),
-              0x80 | (charcode & 0x3f));
-        }
-      }
-      return utf8;
-    }
-    return toUTF8Array(s);
-  };
-
-}();
-
-(function (factory) {
-  if (typeof define === 'function' && define.amd) {
-      define([], factory);
-  } else if (typeof exports === 'object') {
-      module.exports = factory();
-  }
-}(function () {
-    return qrcode;
-}));
-
-;try{qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8']}catch(e){}
-</script>
-<script>
-const W=1080,H=1920,$=id=>document.getElementById(id),cv=$('cv'),ctx=cv.getContext('2d');
-const F="'Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif";
-let logoImg=null,qrImg=null;
-const lines=v=>v.split('\n').map(x=>x.trim()).filter(Boolean);
-function shade(hex,a){const n=parseInt(hex.slice(1),16);return `rgb(${[n>>16,(n>>8)&255,n&255].map(v=>Math.round(v*a))})`}
-function wrap(t,fs,w,wt=500){ctx.font=`${wt} ${fs}px ${F}`;const out=[];let cur='';for(const ch of t){if(ctx.measureText(cur+ch).width>w&&cur){out.push(cur);cur=ch.trim()?ch:''}else cur+=ch}if(cur)out.push(cur);return out}
-function rr(x,y,w,h,r,fill){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill()}
-function box(items,w,fs,bullet,s){const pad=34*s+8,ind=bullet?34:0,sp=10*s,L=[];items.forEach(t=>wrap(t,fs,w-2*pad-ind).forEach((x,i)=>L.push({x,first:i==0,b:bullet&&i==0})));const lh=fs*1.5;return{L,pad,fs,ind,lh,sp,n:items.length,ch:L.length*lh+Math.max(0,items.length-1)*sp,h:L.length*lh+Math.max(0,items.length-1)*sp+2*pad}}
-
-function render(){
-  const main=$('color').value,PAD=60,CW=W-2*PAD,GX=24,LW=Math.round((CW-GX)*.7),RW=CW-GX-LW,INK='#1d2433',GREY='#eef0f3',RX=PAD+LW+GX;
-  ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
-  // 헤더
-  const HEAD=340;ctx.fillStyle=main;ctx.fillRect(0,0,W,HEAD);
-  ctx.textBaseline='middle';ctx.fillStyle='#fff';ctx.textAlign='right';ctx.font=`500 34px ${F}`;ctx.fillText($('sub').value,W-36,44);
-  ctx.textAlign='center';
-  const tl=lines($('title').value),tw=W-2*PAD;let fs=96;
-  while(fs>40){const n=tl.flatMap(l=>wrap(l,fs,tw,900)).length;if(n*fs*1.25<=HEAD-110)break;fs-=4}
-  const all=tl.flatMap(l=>wrap(l,fs,tw,900)),lh=fs*1.25,y0=80+(HEAD-80-all.length*lh)/2;
-  ctx.font=`900 ${fs}px ${F}`;ctx.fillStyle='#fff';all.forEach((l,i)=>ctx.fillText(l,W/2,y0+lh*(i+.5)));
-  // 하단: 상담전화 70% + 로고 30%
-  const FOOT=102,fy=H-FOOT,FW=Math.round(W*.7);
-  ctx.fillStyle=main;ctx.fillRect(0,fy,FW,FOOT);ctx.fillRect(FW,fy,W-FW,6);
-  const ptxt='상담 : '+$('tel').value;let pf=38;ctx.font=`900 ${pf}px ${F}`;
-  while(pf>28&&ctx.measureText(ptxt).width>FW-60){pf-=2;ctx.font=`900 ${pf}px ${F}`}
-  ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(ptxt,FW/2,fy+FOOT/2);
-  const lw0=W-FW;
-  if(logoImg){const r=Math.min((lw0-48)/logoImg.width,(FOOT-24)/logoImg.height),dw=logoImg.width*r,dh=logoImg.height*r;ctx.drawImage(logoImg,FW+(lw0-dw)/2,fy+(FOOT-dh)/2+3,dw,dh)}
-  else{const ol=wrap($('org').value,30,lw0-40,700);ctx.fillStyle=INK;ctx.textAlign='center';ctx.font=`700 30px ${F}`;ol.forEach((l,i)=>ctx.fillText(l,FW+lw0/2,fy+FOOT/2+(i-(ol.length-1)/2)*36))}
-  // 본문 배치 계산
-  const per=[$('s').value,$('e').value],GAP_MIN=26,top=HEAD+36,avail=fy-36-top;
-  let s=1,B;
-  for(;s>.4;s-=.03){
-    const f=44*s,tf=54*s,th=tf*1.9,perH=150*s,type=box(lines($('type').value),LW,f,true,s),pay=box(lines($('pay').value),CW,f,false,s),duty=box(lines($('duty').value),CW,f,true,s),placeMin=130*s;
-    const A=Math.max(th+RW+th+placeMin,th+perH+th+type.h);
-    B={f,tf,th,perH,type,pay,duty,A,tot:A+th+pay.h+th+duty.h};
-    if(avail-B.tot>=GAP_MIN*3)break;
-  }
-  const gap=Math.min(56,(avail-B.tot)/3),th=B.th;let y=top;
-  function title(t,x,y,sz){const EMO={'모집기간':'📅','지원 QR':'📱','근무형태':'💼','근무처':'📍','급여':'💰','직무 / 담당업무':'📋'};ctx.font=`400 ${sz*.9}px ${F}`;ctx.textAlign='left';ctx.fillStyle='#000';ctx.fillText(EMO[t]||'✔',x,y+th/2+2);ctx.fillStyle=shade(main,.8);ctx.font=`900 ${sz}px ${F}`;ctx.fillText(t,x+sz*1.3,y+th/2+1)}
-  function draw(b,x,y,w,hh,center){rr(x,y,w,hh,22,GREY);ctx.font=`500 ${b.fs}px ${F}`;let cy=y+(hh-b.ch)/2+b.lh/2;
-    b.L.forEach((l,i)=>{if(l.first&&i>0)cy+=b.sp;ctx.fillStyle=INK;if(center){ctx.textAlign='center';ctx.fillText(l.x,x+w/2,cy)}else{ctx.textAlign='left';if(l.b){ctx.fillStyle=main;ctx.beginPath();ctx.arc(x+b.pad+8,cy,8,0,7);ctx.fill();ctx.fillStyle=INK}ctx.fillText(l.x,x+b.pad+b.ind,cy)}cy+=b.lh})}
-  // 그룹: 왼쪽(모집기간+근무형태) / 오른쪽(QR+근무처)
-  const G=B.A+gap;
-  title('모집기간',PAD,y,B.tf);title('지원 QR',RX,y,B.tf*.85);
-  rr(PAD,y+th,LW,B.perH,22,GREY);
-  const pf2=60*(B.perH/150);ctx.font=`900 ${pf2}px ${F}`;const a=per[0]+'  -  ',wa=ctx.measureText(a).width,we=ctx.measureText(per[1]).width,x0=PAD+LW/2-(wa+we)/2;
-  ctx.textAlign='left';ctx.fillStyle=INK;ctx.fillText(a,x0,y+th+B.perH/2+2);ctx.fillStyle='#e53935';ctx.fillText(per[1],x0+wa,y+th+B.perH/2+2);
-  // QR (정사각형)
-  const qy=y+th,p=14;rr(RX,qy,RW,RW,22,GREY);
-  const ix=RX+p,iy=qy+p,is=RW-2*p,url=$('qr').value.trim();ctx.fillStyle='#fff';ctx.fillRect(ix,iy,is,is);
-  let drew=false;
-  if(qrImg){ctx.drawImage(qrImg,ix+8,iy+8,is-16,is-16);drew=true}
-  else if(url&&typeof qrcode==='function'){try{const q=qrcode(0,'M');q.addData(url);q.make();const n=q.getModuleCount(),c=(is-20)/n;ctx.fillStyle='#000';for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))ctx.fillRect(ix+10+k*c,iy+10+r*c,c+.6,c+.6);drew=true}catch(e){}}
-  if(!drew){ctx.fillStyle='#9aa3b2';ctx.textAlign='center';ctx.font=`900 56px ${F}`;ctx.fillText('QR',ix+is/2,iy+is/2-16);ctx.font=`500 22px ${F}`;ctx.fillText('QR 링크를 입력해 주세요',ix+is/2,iy+is/2+28)}
-  // 근무형태 (왼쪽, QR 높이까지 확장)
-  const ty=y+th+B.perH+gap;title('근무형태',PAD,ty,B.tf);
-  draw(B.type,PAD,ty+th,LW,G-(th+B.perH+gap+th),false);
-  // 근무처 (오른쪽, QR 아래)
-  const py=qy+RW+gap;title('근무처',RX,py,B.tf*.85);
-  const ph=G-(th+RW+gap+th);rr(RX,py+th,RW,ph,22,GREY);
-  const pfs=44*(B.perH/150),pw=wrap($('place').value,pfs,RW-40,900);ctx.font=`900 ${pfs}px ${F}`;ctx.fillStyle=INK;ctx.textAlign='center';
-  pw.forEach((l,i)=>ctx.fillText(l,RX+RW/2,py+th+ph/2+(i-(pw.length-1)/2)*pfs*1.3));
-  y+=G+gap;
-  title('급여',PAD,y,B.tf);y+=th;draw(B.pay,PAD,y,CW,B.pay.h,true);y+=B.pay.h+gap;
-  title('직무 / 담당업무',PAD,y,B.tf);y+=th;draw(B.duty,PAD,y,CW,B.duty.h,false);
+const RAW=[{"모집구분": "중장년 채용 우수기업관", "당일 채용여부": "향후 채용", "기업명": "㈜케이티씨에스", "대표자명": "이창호", "업종": "정보제공업", "근로자수": "9000", "홈페이지": "https://www.ktcs.co.kr", "기업소개": "대한민국을 대표하는 고객서비스 플랫폼 기업 \n\n\n\n\n\n*중장년 채용 우수기업관", "구인인원": "30", "구인직무": "", "직무 상세소개": "토스쇼핑 고객센터 상담사 업무\n\n\n\n- 판매자를 통해 구매자 문의내용 확인 후 답변\n\n- 기타 부대 업무\n\n\n\n#채팅상담 70&#37;, 전화상담 30&#37;\n\n- 전화 면접 시 교육 시작 당일 오전에 타자 테스트 진행\n\n*테스트 결과 기준 미달 시, 교육 참석 제한될 수 있음\n\n\n\n*정년 만 60세\n\n\n\n\n\n#평일조(월~금) 주 5일\n\n(공휴일 관계 없이 월~금 근무 필수)\n\n - 선택1) 09~18시\n\n - 선택2) 13~22시\n\n - 선택3) 평일조 모두가능\n\n\n\n\n\n#주말조 (금토일월 + 1일) 주 5일\n\n - 선택4) 09~18시\n\n - 선택5) 13~22시\n\n - 선택6) 주말조 모두가능\n\n", "구인형태": "정규직", "근무조건": "4대보험 가입", "보수": "월 222~254만원", "필요학력": "", "필요경력": "경력무관", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "CS상담 경력 우대", "실근무지": "근무예정지\t서울 강서구 마곡중앙14로 22 틸론빌딩", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "185"}, {"모집구분": "중장년 채용 우수기업관", "당일 채용여부": "향후 채용", "기업명": "(주)현대그린푸드", "대표자명": "박홍진", "업종": "일반음식점업", "근로자수": "9800", "홈페이지": "https://hyundaigreenfood.com", "기업소개": "현대그린푸드는 현대백화점 그룹 유통계열사로 \n\n급식, 외식, 유통, 건강식, 리테일 등 식품과 관련된 사업을 운영하는 대기업군의 종합식품기업으로 \n\n자연과 건강을 지킨다는 비전 아래 그 가치를 올바르게 전달하는 목표로 운영되고 있습니다.\n\n\n\n\n\n*중장년 채용 우수기업관", "구인인원": "20", "구인직무": "", "직무 상세소개": "외식사업부 사원\n\n\n\n직무내용: 현대백화점 및 현대아울렛 내 입점 외식브랜드에서 현장 근무(홀, 조리사, 세척 등)\n\n\n\n\n\n\n\n*고용형태: 정규직 및 계약직 모집\n\n\n\n-정년(만 60세 이상) 시니어인턴십 정부지원 사업 연계로 9개월 단위 계약직 근무 가능\n\n\n\n-관련 자격증 보유자 입사 후 6개월 지난 시점부터 진급 가능\n\n\n\n-관련 업무 경력직 급여 협의 및 전문직 입사 가능", "구인형태": "정규직", "근무조건": "4대보험 가입", "보수": "2,600~3,550 /복리후생 별도", "필요학력": "학력무관", "필요경력": "경력무관", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "관련 근무 경력 3년이상, 관련 학과 전공 및 자격증 보유자", "실근무지": "전국 현대백화점 및 현대아울렛 내 입점 브랜드", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "186"}, {"모집구분": "중장년 채용 우수기업관", "당일 채용여부": "향후 채용", "기업명": "주식회사 케이에프씨코리아", "대표자명": "신호상", "업종": "프랜차이즈", "근로자수": "4337", "홈페이지": "www.kfckorea.com", "기업소개": "KFC는 1984년 종로 1호점을 오픈하면서 국내 고객들에게 KFC만의 독특한 치킨을 선보이기 시작했습니다. \n\n이후 전국 200여개의 직영 매장에서 매일 신선하고 맛있는 치킨을 선사하고 있습니다. \n\n\n\n지난 40여년간 고객의 사랑으로 성장해온 KFC는 앞으로도 가장 신선하고 맛있는 치킨을, \n\n가장 쾌적한 환경에서 가장 즐겁게 드실 수 있도록 최선을 다하겠습니다.\n\n\n\n\n\n*중장년 채용 우수기업", "구인인원": "0", "구인직무": "", "직무 상세소개": "KFC 중장년 파트너\n\n\n\n직무내용: 매장영업 및 제품제조\n\n\n\n근무요일: 주3~5일(스케줄근무)\n\n\n\n*정년: 만 69세\n\n*시니어일자리", "구인형태": "계약직", "근무조건": "4대보험 가입", "보수": "시급 10,320원", "필요학력": "", "필요경력": "경력무관", "연령제한": "70세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "스케줄 근무 가능자\n\n", "우대사항": "", "실근무지": "서울시 내 직영점", "근무일": "주5일", "근무시간": "4-7시간", "조회수": "208"}, {"모집구분": "중장년 채용 우수기업관", "당일 채용여부": "향후 채용", "기업명": "한국맥도날드유한회사", "대표자명": "김기원", "업종": "도매업(음식)", "근로자수": "19120", "홈페이지": "https://www.mcdonalds.co.kr/kor/", "기업소개": "한국맥도날드는 전국 약 400여 개 레스토랑을 운영하며,\n\n 다양한 연령과 배경을 가진 구성원들이 함께 성장하고 있는 글로벌 외식 기업입니다. \n\n\n\n체계적인 교육과 안정적인 근무 환경을 바탕으로, \n\n경험과 연령에 관계없이 새로운 도전을 시작할 수 있는 다양한 일자리 기회를 제공하고 있습니다.\n\n\n\n\n\n*중장년 채용 우수기업관", "구인인원": "0", "구인직무": "", "직무 상세소개": "크루 (시간제 아르바이트)\n\n\n\n직무내용: 햄버거 조리 및 판매, 매장 청결 관리 및 고객 응대, 기타 매장 지원 업무 \n\n\n\n근무일 및 근무시간 : 레스토랑과 협의 (자유로운 주별 스케줄 근무제)\n\n보수 : 시급 10,320원 (주휴수당 및 연장,야간, 휴일 근로수당은 법정 기준에 따라 별도 지급)\n\n\n\n*시니어일자리", "구인형태": "계약직", "근무조건": "4대보험 가입", "보수": "시급 10,320원", "필요학력": "학력무관", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "자격무관", "우대사항": "", "실근무지": "전국 맥도날드 직영 매장", "근무일": "주3일", "근무시간": "4-7시간", "조회수": "131"}, {"모집구분": "중장년 채용 우수기업관", "당일 채용여부": "향후 채용", "기업명": "KB골든라이프케어", "대표자명": "조용범", "업종": "요양서비스", "근로자수": "680", "홈페이지": "www.kbgoldenlifecare.co.kr", "기업소개": "KB골든라이프케어는 KB금융그룹과 KB라이프생명이 오랜 기간 쌓아온 지식과 노하우, 네트워크와 “안심”, “신뢰“, “희망” 등의 핵심가치를 바탕으로 어르신들께 차별화되고 전문화된 고품격 케어 서비스를 제공하는 프리미엄 요양시설입니다.", "구인인원": "0", "구인직무": "", "직무 상세소개": "요양보호사\n\n(입소어르신 케어 및 기타 업무 수행)\n\n\n\n*정년 만 60세", "구인형태": "정규직", "근무조건": "기타", "보수": "월 230만원 이상", "필요학력": "교대근무 있음", "필요경력": "경력무관", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "요양보호사 자격증 소지자", "우대사항": "", "실근무지": "KB골든라이프케어 각 사업장(근무지별 지원 가능)", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "75"}, {"모집구분": "중장년 채용 우수기업관", "당일 채용여부": "당일 채용/향후 채용", "기업명": "타다_편안한이동", "대표자명": "이승현 ", "업종": "택시운수업", "근로자수": "136", "홈페이지": "https://www.tadatada.com/drivers/direct", "기업소개": "타다 편안한이동은 프리미엄 모빌리티 서비스를 제공하는 운수 회사입니다\n\n\n\n안전과 친절을 최우선 가치로 고객에게 편안한 이동을 제공합니다.  \n\n\n\n체계적인 교육과 운행 지원으로 안정적인 근무 환경을 제공합니다.  \n\n\n\n고객과 드라이버가 모두 만족하는 이동 서비스를 만들어가고 있습니다. ", "구인인원": "30", "구인직무": "", "직무 상세소개": "타다_편안한이동 운전직 드라이버 채용\n\n\n\n*시니어일자리", "구인형태": "정규직", "근무조건": "4대보험 가입", "보수": "월 238만원", "필요학력": "", "필요경력": "경력무관", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "2종보통 이상 운전면허증 보유자 , 택시 운수종사자 자격 취득에 결격사유가 없는자", "우대사항": "외국어 가능자", "실근무지": "서울 경기 인천 등 수도권 지역 중심 운행", "근무일": "주6일", "근무시간": "8시간 이상", "조회수": "137"}, {"모집구분": "중장년 채용 우수기업관", "당일 채용여부": "당일 채용", "기업명": "나이스신용정보 주식회사", "대표자명": "노태성", "업종": "콜센터, 아웃소싱, 기타", "근로자수": "1048", "홈페이지": "https://www.niceamc.co.kr/kr/index.do", "기업소개": "나이스신용정보는 2010년 3월 1일에 설립된 종합자산관리 전문기업으로, 나이스그룹의 계열사이다. \n\n\n\n설립 이래 채권관리, 고객센터 운영, 요금수납, 매출채권 관리 등 \n\n다양한 아웃소싱 서비스를 제공하며 기업의 영업활동과 재무구조 개선에 기여하고 있다.\n\n\n\n \n\n\n\n나이스신용정보의 주요 사업분야는 채권추심, 고객센터 운영, 요금수납관리, 매출채권관리 등이다. \n\n특히, 채권추심 업무는 기업의 연체채권 관리 및 고객 대응 분야로 확대되어, \n\n자산관리사업본부라는 독립된 사업 단위로 편제되어 운영되고 있다.\n\n\n\n또한, 고객센터 운영을 통해 기업의 고객응대 전 과정을 지원하며, \n\n요금수납 및 매출채권 관리 서비스를 통해 기업의 재무 건전성 확보에 기여하고 있다. \n\n\n\n당사는 기업들이 고객을 상대하는 전체 과정에 걸친 종합 자산관리 서비스를 제공하고 있다. \n\n아시아 제1의 BPO(Business Process Outsourcing) 전문 회사를 목표로, \n\n기업 자체의 자산관리 노하우와 고객관리 시스템을 활용해 더욱 전문적으로 자산관리 사업을 운영함으로써 \n\n신용정보사업의 질을 높이는 데 기여한다.\n\n\n\n \n\n최근 나이스신용정보는 금융,통신사 등 주요 고객사를 대상으로 디지털 기반 추심 관리와 고객 응대 자동화를 강화하고 있다. \n\n자체 개발한 디지털 추심관리 시스템을 통해 연체 고객과의 비대면 대응 효율을 높였으며, AI 기반 업무 프로세스 자동화를 도입해 채권 관리와 고객센터 운영의 효율성을 향상시키고 있다.", "구인인원": "19", "구인직무": "", "직무 상세소개": "현금콜센터 및 주차콜센터 상담사 채용\n\n\n\n1. 현금콜센터 상담사 : 총 2명\n\n\n\n- 업무: ATM 금융서비스 관련 업무\n\n(입·출금 관련 불편사항 처리 및 기기 장애 관련 상담)\n\n\n\n가. 근무시간 : 주말 포함 주 5일 (주말=토, 일 모두 포함) 13:00~22:00\n\n나. 급여: 월 270만원\n\n\n\n\n\n\n\n────────────────────────────────────────\n\n\n\n\n\n\n\n2. 주차콜센터 상담사 : 총 17명\n\n\n\n업무: 무인주차 관제 업무\n\n(이용고객 불편사항 처리 및 기기 장애 관련 상담)\n\n\n\n가. 근무시간: 평일 5일 또는 주말 포함 주 5일 (주말=토, 일 모두 포함)\n\n         08:00~17:00 / 09:00~18:00 / 11:00~20:00 / 13:00~22:00\n\n※ 근무시간은 로테이션이 아닌 위 시간대 중 본인이 희망하는 시간대로 선택 가능\n\n\n\n나. 급여: 월 230~270만원\n\n────────────────────────────────────────\n\n다. 공통 지원사항\n\n- 근속수당: 3개월 이상 근무자부터 지급\n\n- 퇴직연금제도, 경조사 지원금, 우수사원 포상\n\n- 건강검진 지원(연 1회)\n\n- 서울디지털대학교 장학 혜택(수업료 50&#37; 감면)\n\n\n\n라. 기타\n\n- 입사 전 교육 평일 5일간 진행 (09:30~17:00)\n\n- 현금콜센터 및 주차콜센터 교육비: 일 5만원\n\n※ 교육 이수 시 교육비 지급\n\n- 3개월 수습기간 운영 (급여상 불이익 없음)\n\n- 복리후생: 4대보험, 연차, 퇴직연금, 연월차수당, 각종 경조금, 경조휴가제, 건강검진 등\n\n\n\n마. 우대사항 및 계약조건\n\n- 우대사항: 유사업무 경험자\n\n- 계약: 1년 단위 (재)계약\n\n- 장기근무 가능\n\n\n\n\n\n*정년 만 60세", "구인형태": "계약직", "근무조건": "4대보험 가입", "보수": "월 230-270만원", "필요학력": "", "필요경력": "경력무관", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "유사업무 경험자 우대", "실근무지": "서울 마포구 마포대로 20 나이스인프라 1층, 2층", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "172"}, {"모집구분": "중장년 채용 우수기업관", "당일 채용여부": "당일 채용", "기업명": "(주)세스코", "대표자명": "전찬혁", "업종": "서비스", "근로자수": "3702", "홈페이지": "www.cesco.co.kr", "기업소개": "믿고 먹을 수 있는 음식을 위한 엄격한 식품 위생 관리. \n\n초미세먼지, 라돈으로부터 자유로운 청정하고 기분 좋은 공기 관리.\n\n\n\n우리 생활을 언제나 위협하는 바이러스로부터 안전한 살균 관리까지. \n\n우리는 더 나은 환경과 위생을 위해 노력하는 글로벌 No.1 종합 환경위생 기업입니다.\n\n\n\n\n\n더 나은 환경과 위생을 향한 우리의 도전은 멈추지 않을 것입니다.\n\n\n\n더 깨끗하고, 더 건강한 삶을 위한 작지만 끊임 없는 노력이 \n\n우리의 삶을, 그리고 이 세상 모든 환경을 더 낫게 만들 수 있다고 믿기 때문입니다.\n\n\n\n오늘의 안심이 내일의 미소가 될 수 있도록, 우리는 언제나 노력합니다.\n\n\n\n\n\n*중장년 채용 우수기업관", "구인인원": "0", "구인직무": "", "직무 상세소개": "세스코 서비스 어시스턴트(CSA)\n\n\n\n내용:\n\n\n\n- 해충방제 전문 서비스 지원 업무\n\n\n\n- 기타 서비스 지원\n\n\n\n*정년 만 60세\n\n\n\n\n\n8시 30분 출근-18시 퇴근 (휴게시간 90분)", "구인형태": "계약직", "근무조건": "4대보험 가입", "보수": "회사 내규", "필요학력": "", "필요경력": "경력무관", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "수도권 전체", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "155"}, {"모집구분": "중장년 채용 우수기업관", "당일 채용여부": "향후 채용", "기업명": "이마트에브리데이", "대표자명": "한채양", "업종": "도소매", "근로자수": "", "홈페이지": "", "기업소개": "이마트 산하 이마트에브리데이 사업부(기업형 슈퍼마켓)", "구인인원": "20", "구인직무": "", "직무 상세소개": "매장영업(PT사원)\n\n\n\n상품 진열, 캐셔, 온라인 피/패킹, 청결작업, 고객 응대 등\n\n\n\n*정년 만 60세", "구인형태": "계약직", "근무조건": "4대보험 가입", "보수": "시급 10,320원", "필요학력": "", "필요경력": "경력무관", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "이마트에브리데이 권역별 지점", "근무일": "주6일", "근무시간": "4-7시간", "조회수": "124"}, {"모집구분": "중장년 채용 우수기업관", "당일 채용여부": "당일 채용/향후 채용", "기업명": "쿠팡풀필먼트서비스유한회사", "대표자명": "정종철, BROWN RYAN ASHER", "업종": "물류, 유통", "근로자수": "48937", "홈페이지": "https://coufc.coupang.com/", "기업소개": "글로벌 이커머스 기업이 쿠팡(Coupang)의 물류를 총괄하는 핵심 기업", "구인인원": "55", "구인직무": "", "직무 상세소개": "현장물류사원(계약직) / 현장관리직(정규직)\n\n\n\n\n\n\n\n직무 내용:\n\n\n\n[계약직]\n\n\n\n납품된 물품을 검수, 검품하고, 전산에 등록한 뒤 선반 또는 파레트에 진열하는 업무 \n\n\n\n진열된 상품을 고객의 주문에 따라 집품하고 포장하는 업무, 지게차의 경우 장비를 이용하여 물건을 적재, 진열\n\n\n\n급여: 2,317,780원~3,143,110원\n\n\n\n* 만근 보너스 14만원이 포함된 금액이며 센터 및 근무조에 따라서 센터별 급여 상이함 \n\n\n\n\n\n\n\n\n\n\n\n[정규직]\n\n\n\n물류센터 공정(입고, 출고, 재고/품질관리, HUB) 별 업무 관리 및 지원\n\n\n\n현장인원(계약직, 일용직) 관리\n\n\n\n현장 운영 및 공정 효율성 관리\n\n\n\n공정 프로세스 개선\n\n\n\n급여: 연봉3,200~4,600만(면접 후 결정)\n\n\n\n*근무조 및 스케줄에 따라 급여가 상이할 수 있습니다.\n\n\n\n* 업무에 따라 조기 출근 및 연장 근무가 발생될 수 있으며, 연장 및 특근 등 기타 수당은 별도 지급됩니다.\n\n\n\n교대근무 있음 (정규직 한정)\n\n\n\n\n\n\n\n근무시간 구분: 주간:8:00~17:00/*오후: 17:00~02:00\n\n\n\n\n\n*정년 만 60세\n\n\n\n", "구인형태": "정규직", "근무조건": "4대보험 가입", "보수": "구인형태별 상이", "필요학력": "", "필요경력": "경력무관", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "수도권역 모든 센터", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "120"}, {"모집구분": "중장년 채용 우수기업관", "당일 채용여부": "당일 채용/향후 채용", "기업명": "주식회사 우아한청년들", "대표자명": "권오중", "업종": "서비스, 도소매, 운수 및 창고업", "근로자수": "1437", "홈페이지": "https://bmart-career.woowayouths.com/", "기업소개": "배민B마트는 다양한 상온/냉장/냉동 식품 및 생활용품을 배달 받을 수 있는 온라인 장보기 서비스입니다.\n\n\n\n\n\n\n\n도심 곳곳에 위치하고 있는 피패킹센터(Pickng&Packing Center)에서는 물류기지에서 상품을 받아 보관하다가 주문이 들어오면 즉시 정확하기 피킹 및 패킹(포장)하여 라이더가 배달을 할 수 있도록 준비합니다.\n\n\n\n\n\n\n\nB마트 피패킹센터에서 근무하는 크루는 상품보관부터 주문을 담고 포장하는 등 B마트를 함께 가꾸어나가며 B마트의 퀵커머스 서비스를 담당하고 있습니다.", "구인인원": "10", "구인직무": "", "직무 상세소개": "구인 직무 : 배민B마트 크루\n\n\n\n직무 설명 : B마트 상품 집품 및 포장, 입고 진열, 지점 환경 정비 \n\n\n\n*시니어일자리\n\n\n\n-4대보험 및 고용보험 가입\n\n-근무일 : 주 2-5일 스케줄 근무 (주 16시간~ 주 40시간 근무 타입에 따라 근무일 조율)\n\n-근무시간 : 탄력근무제 (지점 스케줄에 따른 스케줄 근무제)", "구인형태": "계약직", "근무조건": "4대보험 가입", "보수": "시급 10,500원", "필요학력": "학력무관", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "동종업계 우대, PDA 사용 경험 우대", "실근무지": " 서울 내 29개 지점", "근무일": "주3일", "근무시간": "4-7시간", "조회수": "108"}, {"모집구분": "중장년 채용 우수기업관", "당일 채용여부": "X", "기업명": "한국폴리텍대학교 정수캠퍼스", "대표자명": "", "업종": "", "근로자수": "", "홈페이지": "", "기업소개": "※ 준비중입니다.", "구인인원": "미정", "구인직무": "", "직무 상세소개": "※ 채용 진행하지 않음", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주1일", "근무시간": "1-3시간", "조회수": "93"}, {"모집구분": "일자리관", "당일 채용여부": "당일 채용", "기업명": "아모레퍼시픽", "대표자명": "김승환", "업종": "화장품", "근로자수": "19000", "홈페이지": "https://www.amorecounselor.com/kr/ko/b/html/main.html", "기업소개": "아모레퍼시픽 카운셀러는 나이와 경력에 관계없이 활동 가능한 뷰티 전문 직업입니다.\n\n\n\n고객 상담, 제품 추천, 고객 관리 등의 활동을 수행하며 원하는 시간에 맞춰 유연하게 일할 수 있습니다.\n\n\n\n초보자도 교육을 통해 활동이 가능하며, 재취업 및 제2의 직업을 찾는 분들에게 적합합니다.", "구인인원": "0", "구인직무": "", "직무 상세소개": "- 아모레퍼시픽 카운셀러(후원 방문판매원)\n\n\n\n* 화장품 및 건강기능식품 상담\n\n* 고객 피부 고민 및 니즈에 맞는 제품 제안\n\n* 기존 고객 관리 및 신규 고객 발굴\n\n* 제품 체험, 뷰티 정보 제공 등 고객 서비스 활동\n\n* 온라인(SNS 등) 및 오프라인 고객 관리\n\n\n\n가. 근무조건\n\n* 사업자 등록증 발급 후 활동 가능\n\n* 출퇴근 의무 없이 자율적으로 활동\n\n* 거주지 인근 아모레퍼시픽 영업점 소속 활동\n\n* 체계적인 교육 및 활동 지원 제공\n\n* 활동 실적에 따른 성과 보상 지급\n\n\n\n나. 근무일\n\n본인 일정에 따라 자율적으로 활동 가능\n\n\n\n다. 근무시간\n\n일정 및 활동 계획에 따라 자유롭게 조정 가능\n\n\n\n*시니어일자리", "구인형태": "프리랜서", "근무조건": "기타", "보수": "월 약 104만원", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "* 만 20세 이상 여성\n\n* 학력 및 경력 무관\n\n* 고객 응대 및 상담에 관심 있는 분\n\n* 개인사업자 등록(사업자등록증 발급) 가능자\n\n* 성실하게 고객 관리 활동이 가능한 분", "우대사항": "* 판매·상담·서비스업 경험자\n\n* 뷰티·화장품에 관심이 많은 분\n\n* SNS 활용이 가능한 분\n\n* 재취업 및 제2의 직업을 희망하는 분", "실근무지": "신청자 거주지 근처 아모레퍼시픽 영업점", "근무일": "주1일", "근무시간": "1-3시간", "조회수": "99"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "㈜유한건강생활 ", "대표자명": "손정수", "업종": "건강기능식품 제조업", "근로자수": "65", "홈페이지": "www.yuhancare.com/", "기업소개": "유한건강생활은 유한양행의 자회사로 ‘건강한 삶, 행복한 삶’을 위한 다양한 제품과 서비스를 만들어가는 기업입니다. \n\n\n\n천연물 연구와 과학적 근거를 바탕으로 건강기능식품·뷰티·생활건강 등 \n\n다양한 영역에서 차별화된 브랜드와 제품을 선보이고 있습니다. \n\n\n\n고객의 일상에 더 나은 건강과 가치를 더하며, 지속가능한 헬스&라이프스타일 기업으로 성장하고 있습니다.", "구인인원": "0", "구인직무": "", "직무 상세소개": "뷰티 마케터\n\n\n\n*정년 만 60세", "구인형태": "계약직", "근무조건": "4대보험 가입", "보수": "월 2,156,880원", "필요학력": "", "필요경력": "경력무관", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "· WISE세대(5-60대 여성) 소비자 경험과 인사이트 보유\n\n· 온라인 및 SNS 활용이 가능한 자\n\n· 화장품, 건강기능식품, 소비재 관련 경험 보유자", "우대사항": "· 백화점, 방문판매, 유통채널 근무 경험 보유자\n\n· 마케팅, 영업, MD 등 관련 업무 경험 보유자\n\n· 소비자 패널 및 커뮤니티 활동 경험 보유자\n\n· 다양한 화장품 브랜드 경험 보유자\n\n· (재)취업을 희망하는 경력보유 여성", "실근무지": "강서구", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "125"}, {"모집구분": "일자리관", "당일 채용여부": "봉사", "기업명": "사단법인 국제개발협력민간협의회(KCOC)", "대표자명": "김광동", "업종": "서비스/제조", "근로자수": "44", "홈페이지": "https://www.ngokcoc.or.kr/ ", "기업소개": "KCOC(국제개발협력민간협의회)는 지구촌의 빈곤과 불평등 해소를 위해 활동하는 \n\n130여 개 한국 국제구호개발 NGO의 연합체이며, 480만의 목소리를 대변하고 연결하는 플랫폼입니다.\n\n\n\n KCOC 회원단체에는 480만여 명의 후원자와 1만여 명의 직원이 있으며, \n\n100여 개 국에서 연간 약 8,000억 원 규모의 사업을 진행합니다. \n\n\n\n한국 국제개발협력 분야의 민간 플랫폼인 KCOC (1990년 설립)는 2003년 외교부에 등록된 사단법인으로, \n\n2014년 &#39;UN 경제사회이사회&#39;로부터 특별협의지위를 부여받았으며, \n\n현지 파트너 기관의 활동가 수 만명과 함께 지역사회 문제 해결을 위해 함께 활동합니다. ", "구인인원": "0", "구인직무": "", "직무 상세소개": "※ 정부파견 해외봉사 프로그램 홍보 / 채용 진행하지 않음\n\n\n\n월드프렌즈코리아 봉사단\n\n\n\n[ (WFK) KOICA-NGO / ]\n\n KOICA-NGO 월드프렌즈코리아 봉사단 프로그램 소개 \n\n\n\n봉사단은 대한민국 정부파견 해외봉사단 중 하나로 년 명 파견을 시작으로 현재까지 , \n\n2004년 33명 파견을 시작으로 현재까지 (2026년 기준  ) 약4,400명에 이르는 봉사단원을 파견하였엄. \n\nNGO봉사단원은 NGO의 다양한 분야와 직종에서 현지 지역 사회의 지속가능한 발전과 변화를 위해 활동해오고 있음\n\n중장년 봉사단원의 참여율이 높아지고 있어 해외봉사 프로그램 홍보와 봉사단을 통한 경력 활용 사례를 소개 하고자 함. \n\n\n\n\n\n[WFK KOICA-NGO봉사단 모집 개요]\n\n\n\n- 모집 기간: 2027년 예정 (세부일정 미정)\n\n- 활동 기간: 1년 (국내 원격봉사 1개월+ 현장 파견 11개월)\n\n\n\n- 활동 국가: WFK 해외봉사단 파견 대상 후보국 \n\n(아시아) 캄보디아, 베트남, 몽골, 필리핀, 라오스, 방글라데시, \n\n동티모르, 스리랑카, 태국\n\n(아프리카) 탄자니아, 르완다, 우간다, 케냐, 말라위, 카메룬, 모로코\n\n(중남미) 페루, 도미니카공화국, 콜롬비아\n\n(CIS) 키르기스스탄\n\n---(2025년 파견 기준이며, 파견국가는 매년 상이함)\n\n\n\n\n\n- 활동 분야/내용: 교육, 공공행정, 보건, 농림수산 등 (NGO별 세부 활동내용은 상이함) \n\n\n\n- 봉사단원 선발 기준(지원 자격):        \n\n ·봉사정신이 투철한 만 19세 이상의 대한민국 국적을 가진 자\n\n ·해외봉사활동을 원활하게 수행 가능한 자\n\n ·파견국이 요청하는 자격 기준에 해당하는 자\n\n·「국가공무원법」제33조 각 호의 어느 하나에 해당하지 아니하는 자\n\n ·남자는 군 복무를 필했거나면제된 자 또는 현지활동종료일 기준 병역 의무 관련 해외체류에제한이 없는 자\n\n\n\n(우대) 사회적배려층* 선발 우대(서류/면접심사 시 가산점부여)\n\n*자립준비청년, 기초생활수급자, 차상위계층, 6개월 이상 장기실직자, 국가유공자(자녀) \n\n\n\n- 선발절차: 서류심사-적합도검사-면접심사-신체검사/신용조회-필수교육\n\n", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주1일", "근무시간": "1-3시간", "조회수": "158"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "(주)케이알엔지니어링", "대표자명": "장경식", "업종": "기술엔지니어링", "근로자수": "97", "홈페이지": "www.kreng.co.kr", "기업소개": "Design the Future Technology\n\n\n\n케이알엔지니어링(KRE)은 우수한 인적자원, 축적된 노하우와 기술력을 바탕으로 선박설계, 선박감리, 부유식 구조물, Retrofit Engineering, 해양/산업 플랜트, 항만시설장비, 전력시설물, 무대시설, 강구조물/강교/갑문, 신재생에너지등의 컨설팅, 설계, 안전진단, CAE/CFD, 검사 및 감리 등 ‘Total Engineering Service’를 제공하는 선박, 항만 분야 엔지니어링 전문기업입니다.", "구인인원": "5", "구인직무": "", "직무 상세소개": "1.선박 설계/감리/컨설팅 분야 채용\n\n\n\n2.항만 장비 산업설비 분야 채용\n\n\n\n기술용역 수행 (설계, 도면검토, 구조해석, 컨설팅 등), 프로젝트 개발 및 영업, \n\n\n\n선박/강구조물(해상 및 수상) 감리/검사, 안전진단, IHM 용역수행 \n\n\n\n*정년 만 60세", "구인형태": "정규직", "근무조건": "4대보험 가입", "보수": "연 4,800만원~", "필요학력": "", "필요경력": "경력 5년 이상", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "영어 능통자, 해외여행에 결격 사유가 없는 자, 자격증 보유자 우대", "실근무지": "서울 구로구, 김해사무소, 해외", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "49"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "주식회사 스페이스핏", "대표자명": "윤인영", "업종": "정보통신업, 전문과학 및 기술서비스업", "근로자수": "1", "홈페이지": "www.dontworrydesign.com", "기업소개": "주식회사 스페이스핏은 건축·인테리어 산업의 디지털 전환을 위한 서비스를 개발·운영하는 기업입니다. \n\n\n\n현재 건축·인테리어 B2B 콘텐츠 플랫폼 ‘걱정마디자인’을 운영하고 있으며, 도면·3D·마감 스펙 등 실제 인테리어 실무에 활용할 수 있는 설계 콘텐츠를 제공합니다. \n\n\n\n스페이스핏의 본사는 천안에 있으며, 경기 구리 갈매동에 지사를 운영하고 있습니다.\n\n\n\n인테리어 산업의 운영 표준을 만드는 AI 기반 인테리어 오퍼레이팅 기업으로의 성장하는 것을 목표로 하고 있으며, \n\n글로벌 건축과 인테리어 산업의 표준을 만들어가고자 합니다.", "구인인원": "1", "구인직무": "", "직무 상세소개": "1. 설계 데이터 기반 인테리어 운영 플랫폼 운영 관리자 채용\n\n\n\nㆍ일반 사무 및 행정 업무 전반 지원\n\n\n\nㆍ회원/파트너사/고객 관리 및 커뮤니케이션\n\n\n\nㆍ데이터 아카이빙: 사내 공유 드라이브 데이터 관리 모니터링 및 정비\n\n\n\nㆍ재택근무자 운영 관리: 비대면 작업 프로세스 점검 및 운영 정책 수립/개선 \n\n\n\nㆍB2B 인테리어 디자인 콘텐츠 플랫폼 운영 및 CS 관리\n\n\n\nㆍ운영 매뉴얼 정비 및 개선\n\n\n\n\n\n\n\n2. 신입 콘텐츠 디자이너 채용\n\n\n\n- 인테리어 콘텐츠 디자인 \n\n\n\n- 콘텐츠 상세페이지 기획 및 제작 \n\n\n\n- 콘텐츠 판매자가 제출한 디자인 콘텐츠 및 도면 데이터 검수\n\n \n\n- 사내 작업 기준(가이드라인 및 클라우드 시스템)에 맞춘 디자인 자산 관리\n\n\n\n근무조건 \n\n● 근무형태: 정규직 \n\n● 근무시간: 주 5일, 09:00 ~ 18:00 \n\n● 근무장소: 경기도 구리시 갈매동 거점 사무실 \n\n● 급여: 회사 내규에 따름\n\n\n\n전형절차 \n\n● 1차 서류전형 &gt; 1차 면접 &gt; 2차 면접 &gt; 임원 면접 &gt; 최종 합격 - 면접일정은 추후 통보됩니다. \n\n\n\n지원방법 \n\n● 접수방법: 이메일 접수 (admin@dontworrydesign.com) \n\n● 제출서류: 이력서, 자기소개서, 포트폴리오 (PDF 형식 권장) \n\n● 메일제목: [스페이스핏] 콘텐츠 디자이너 지원자_홍길동 \n\n\n\n기타 유의사항 \n\n● 원활한 채용 진행을 위해 공고 내용을 충분히 숙지하신 후 지원해 주시기 바랍니다. \n\n(업무 일정상 유선 문의 대응이 어렵습니다.) \n\n● 적합한 인재 채용 시 조기 마감될 수 있습니다. \n\n● 제출 서류에 허위 사실이 발견될 경우 채용이 취소될 수 있습니다.\n\n", "구인형태": "정규직", "근무조건": "4대보험 가입", "보수": "면접 후 결정", "필요학력": "", "필요경력": "경력 1년 이상", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "2. 신입 콘텐츠 디자이너 채용\n\n\n\n- 학력: 관련학과 대졸이상 \n\n- 경력: 신입 \n\n- 필수 툴: AutoCAD, Adobe Photoshop, PowerPoint, Microsoft Office 활용 능력\n\n", "우대사항": "1. 설계 데이터 기반 인테리어 운영 플랫폼 운영 관리자 채용\n\n\n\nㆍ인근 지역 거주자 우대(구리, 남양주 등 갈매동으로 대중교통이나 자차로 출퇴근 용이하신 분, 주차 가능)\n\n\n\nㆍ건축/인테리어 분야 경력자\n\n\n\nㆍ설계 사무소, 건축 자재 유통 실무, 인테리어 코디네이터 경험자\n\n\n\nㆍ플랫폼/IT 서비스 운영 경험자 및 데이터 관리 능력 우수자\n\n\n\n\n\n2. 신입 콘텐츠 디자이너 채용\n\n\n\n- 차량소지자 \n\n- 인근거주자 \n\n- 유관업무 경험자(인턴·알바) \n\n- 전공: 실내건축과, 인테리어 디자인학과, 건축계열 ", "실근무지": "경기도 구리시 갈매순환로166번길 45", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "58"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "㈜에버영피플", "대표자명": "이한복", "업종": "서비스", "근로자수": "20", "홈페이지": "www.everyoungpeople.com", "기업소개": "㈜에버영피플은 &#34;나이가 한계가 아니라 새로운 경쟁력&#34;이라는 믿음으로 \n\n2017년 설립된 시니어 ICT 사회혁신기업입니다.\n\n 55세이상 중장년의 경험과 전문성을 디지털기술과 연결하여\n\n IT아웃소싱, AI데이터구축, 온라인 서비스 모니터링, AI케어콜관제 등 다양한 일자리를 창출하고 있습니다.\n\n\n\n특히, 디지털교육을 통한 시니어를 단순한 기술소비자가 아닌 AI시대의 새로운 인재로 육성하고 \n\n교육-일자리-돌봄을 연결하는 지속가능한 디지털 생태계를 만들어가고 있습니다. \n\n\n\n에버영피플은 시니어의 경험과 AI기술을 결합하여 초고령사회 문제를\n\n새로운 사회적.경제적 가치로 전환하는 대한민국 대표 시니어ICT혁신기업을 지향합니다.", "구인인원": "0", "구인직무": "", "직무 상세소개": "금융기관 데이터 검수, 케어콜 관제, 온라인.서비스 모니터링\n\n\n\n1. 금융기관 데이터 검수업무\n\n\n\n2. 케어콜 업무\n\n\n\n3. 쳇봇영업 업무\n\n\n\n4. 환경미화업무\n\n\n\n*시니어일자리", "구인형태": "계약직", "근무조건": "4대보험 가입", "보수": "월50시간내외/60~70만원", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "송파, 여의도, 광화문", "근무일": "주3일", "근무시간": "4-7시간", "조회수": "228"}, {"모집구분": "일자리관", "당일 채용여부": "당일 채용/향후 채용", "기업명": "주식회사 펫피플", "대표자명": "이원복", "업종": "서비스업", "근로자수": "10", "홈페이지": "petplanet.co", "기업소개": "주식회사 펫피플은 위탁 돌봄 「펫플래닛」과 방문 돌봄 「와요」를 운영하는 펫테크 기업입니다. \n\n\n\n검증된 펫시터와 보호자를 연결하고, 실시간 GPS 이동경로와 사진·영상 돌봄일지로 투명한 돌봄 경험을 제공합니다. \n\n누적 회원 35만 명, 누적 돌봄 반려동물 50,212마리를 기록하고 있습니다.\n\n\n\n이번 박람회에서 중점 모집하는 「펫플래닛」 펫시터는 본인의 집에서, \n\n본인이 수락한 예약만 돌보는 자택 기반 일자리입니다. 출퇴근과 고정 근무시간이 없어 체력 부담이 적고,\n\n 실제 활동 펫시터의 주된 연령대가 50대 이상입니다. \n\n\n\n회사는 서울시50플러스캠퍼스·여성인력개발센터와 협력해 중장년 대상 펫시터 양성 교육을 지속 운영해 왔습니다.\n\n\n\n「펫플래닛」은 2026년 3월 산업통상자원부 규제 샌드박스 실증특례를 받아 제도적 기반 위에서 운영되고 있습니다.", "구인인원": "30", "구인직무": "", "직무 상세소개": "반려동물 위탁 돌봄 펫시터 「펫플래닛」  (※ 방문 돌봄 「와요」 병행 모집)\n\n\n\n\n\n\n\n직무내용:\n\n\n\n[주 모집] 위탁 돌봄 「펫플래닛」 펫시터\n\n\n\n보호자가 여행·출장 등으로 집을 비우는 동안, 보호자가 데려온 반려견을 펫시터 본인의 집에서 정해진 기간 맡아 돌보는 일입니다.\n\n\n\n*시니어일자리\n\n\n\n사료 급여, 배변 정리, 산책 또는 놀이, 상태 관찰이 주 업무이며, 돌봄 중 사진과 일지를 앱으로 보호자에게 전송하는 것까지가 한 건의 업무입니다.\n\n\n\n출퇴근이 없고, 모든 예약은 앱에서 본인이 직접 수락 여부를 결정합니다. \n\n\n\n-근무지 : 펫플래닛(위탁 돌봄)은 지역별 서비스 가능 여부가 달라 지원 전 거주지 확인이 필요합니다. 현장에서 안내해 드립니다.\n\n\n\n\n\n[병행 모집] 방문 돌봄 「와요」 펫시터\n\n\n\n펫시터가 보호자 집으로 방문해 30분~60분 단위로 돌봄·산책을 진행합니다. 자택 여건상 위탁이 어렵거나 「펫플래닛」 활동 지역이 아닌 경우 선택할 수 있습니다.\n\n\n\n\n\n\n\n근무일\n\n:고정 요일 없음. 본인이 앱에서 가능한 날짜를 열어두면 그 날짜의 예약만 배정됩니다.\n\n\n\n\n\n*탄력근무제 적용\n\n\n\n\n\n\n\n[수입 기준]  건당 정산, 매주 지급. 월 20일·1일 1건 기준 평균 약 100만 원 수준이며 진행 건수에 따라 상이합니다.\n\n\n\n", "구인형태": "프리랜서", "근무조건": "4대보험 미가입", "보수": "약 월 20회 활동 시 약 100만원", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "[지원자격]  만 19세 이상 / 반려동물을 돌본 경험이 있으신 분 / 스마트폰으로 사진 전송과 앱 사용이 가능하신 분\n\n\n\n[펫플래닛 자택 요건]  주거면적 50㎡ 이상 · 상주견 2마리 이하 · 홈캠(대여 가능) 및 안전펜스 설치 · 금연 가구 · 가족 동의\n\n\n\n\n\n\n\n[교육·자격]  선발 시 온라인 교육 이수(교육비 30,000원 전액 면제). 반려동물관리사 자격증이 필요하며, 취득비 50,000원은 첫 돌봄 1건 완료 후 전액 환급합니다.\n\n\n\n", "우대사항": "[우대사항]  반려동물 관련 자격증 보유자 / 자택에서 반려동물을 키우고 계신 분 / 주중 낮 시간 활동이 가능하신 분", "실근무지": "펫플래닛-펫시터 자택/와요-보호자 자택(본인거주지인근)", "근무일": "주7일", "근무시간": "4-7시간", "조회수": "84"}, {"모집구분": "일자리관", "당일 채용여부": "당일 채용", "기업명": "케어링(주)", "대표자명": "김태성", "업종": "요양 서비스업", "근로자수": "130", "홈페이지": "https://recruit.caring.co.kr/", "기업소개": "어르신들께 요양서비스를 제공하며, 전국 60개 이상의 케어링 직영 장기요양 센터와 함께합니다.\n\n\n\n본사와 본부의 지원을 바탕으로 케어 품질을 높여가며 지속적으로 성장하고 있습니다.", "구인인원": "5", "구인직무": "", "직무 상세소개": "방문요양 요양보호사\n\n\n\n어르신 댁을 방문하여 신체 활동, 인지 활동, 일상생활, 그리고 말벗과 같은 정서적 지원을 제공\n\n\n\n*시니어일자리", "구인형태": "계약직", "근무조건": "4대보험 미가입", "보수": "시급 13,000원", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "요양보호사 자격증 보유하신 분 ", "우대사항": "", "실근무지": "케어링 수도권 지역 방문요양센터", "근무일": "주5일", "근무시간": "1-3시간", "조회수": "32"}, {"모집구분": "일자리관", "당일 채용여부": "당일 채용/향후 채용", "기업명": "(주)교원구몬", "대표자명": "이석환", "업종": "교육서비스업", "근로자수": "1500", "홈페이지": "kumon.co.kr", "기업소개": "유아부터 성인까지 다양한 연령층을 대상으로 기초학습 중심의 프로그램을 운영하고 있음", "구인인원": "0", "구인직무": "", "직무 상세소개": "학습지 방문 교사\n\n\n\n", "구인형태": "계약직", "근무조건": "4대보험 가입", "보수": "월 200만원", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "동종업계 근무자 혜택", "실근무지": "서울 & 서울 근교", "근무일": "주3일", "근무시간": "4-7시간", "조회수": "71"}, {"모집구분": "일자리관", "당일 채용여부": "당일 채용/향후 채용", "기업명": "㈜ 웅진씽크빅", "대표자명": "YOON SEUNG HYUN(윤승현)", "업종": "교육/학습지", "근로자수": "12000", "홈페이지": "https://www.wjthinkbig.com/index.do", "기업소개": "40년 이상의 교육 노하우를 바탕으로 지속적인 창조와 혁신, 차별화된 콘텐츠를 통해\n\n\n\n4차산업혁명시대의 새로운 AI교육기업으로 거듭나고 있는 기업입니다.", "구인인원": "10", "구인직무": "", "직무 상세소개": "웅진씽크빅 방문교사 및 공부방 교사\n\n\n\n회원 방문수업 및 공부방 회원 학습관리 코칭\n\n\n\n- 근무일 : 주3~5일 (협의가능)\n\n\n\n*정년 만 57세", "구인형태": "특수고용직", "근무조건": "고용보험만 가입", "보수": "평균 월 50~200만원", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "동종업계 근무자 혜택 有", "실근무지": "서울 전 지역", "근무일": "주5일", "근무시간": "4-7시간", "조회수": "40"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "㈜와이에스콘텐츠", "대표자명": "이연실", "업종": "교육서비스업외", "근로자수": "5", "홈페이지": "care-angel.com", "기업소개": "노인의 삶의 질 향상을 위해 시니어 전용 콘텐츠와 건강증진 프로그램을 개발·보급하는 기업입니다.\n\n\n\n치매 예방, 정서 안정, 여가 활동 등을 위한 맞춤형 프로그램을 제작하고 전문 강사 양성도 함께 진행합니다.\n\n\n\n어르신들이 즐겁고 활기찬 노후를 보낼 수 있도록 다양한 복지 현장과 연계한 서비스를 제공합니다.", "구인인원": "5", "구인직무": "", "직무 상세소개": "시니어강사\n\n\n\n\n\n\n\n직무내용:\n\n\n\n데이케어센터, 요양원 등 프로그램 강사\n\n\n\n\n\n\n\n근무요일: 주3일 혹은 주2일\n\n\n\n\n\n\n\n고용형태: 정규직 혹은 프리랜서\n\n\n\n고용보험/4대보험 가입", "구인형태": "정규직", "근무조건": "4대보험 가입", "보수": "채용 시 협의", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "서울 강서구 마곡중앙로 59-17 류마타워2 510호 ", "근무일": "주3일", "근무시간": "1-3시간", "조회수": "244"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "(주)그레이스랩", "대표자명": "배민덕", "업종": "서비스업", "근로자수": "3", "홈페이지": "gracehome.co.kr", "기업소개": "정기적인 가정 방문,\n\n학습및 건강증진 관리 활동,\n\n정신건강의학 전문의가 감수한 프로그램 기반의 성장 리포트 발송까지,\n\n- 시니어 프리미엄 인지 훈련 서비스입니다.\n\n", "구인인원": "0", "구인직무": "", "직무 상세소개": "그레이스매니저\n\n\n\n* 직무내용: \n\n- 시니어 회원 방문하여 인지 학습 등 두뇌  활성화 프로그램 진행 (워크북 등 자료 이용)  \n\n- 매 방문 시 평균 40여분 진행  \n\n- 회원은 본사에서 거주지 우선으로 배정  \n\n- 개인 스케줄에 따라 회원 방문 (탄력적 근무)\n\n\n\n*정년 만 65세\n\n\n\n보수: 시급 25,000원(인센티브 별도/회원 20명(하루 4명) 관리 시 월 200만원 이상의 안정적인 활동이 가능한 구조)\n\n\n\n근무일: 주 1~5일(탄력근무)\n\n\n\n근무시간: 일 1~7시간(탄력근무)\n\n", "구인형태": "프리랜서", "근무조건": "4대보험 미가입", "보수": "시급 25,000원", "필요학력": "", "필요경력": "경력무관", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "시니어 관련 자격증 우대", "우대사항": "", "실근무지": "거주지 주변 우선 배정", "근무일": "주1일", "근무시간": "4-7시간", "조회수": "190"}, {"모집구분": "일자리관", "당일 채용여부": "당일 채용/향후 채용", "기업명": " ㈜지에스씨넷 서울지점", "대표자명": "박용수", "업종": "경영컨설팅, 사업지원서비스", "근로자수": "348", "홈페이지": "www.gscnet.co.kr", "기업소개": "지에스씨넷은 2010년 설립이후 ‘종합고용서비스 제공을 통한 고객의 가치를 창조하고 \n\n\n\n지속가능한 성장을 도모하여 더불어 성장한다’라는 목표를 수립하고 지속적인 성장을 \n\n\n\n이루어 나가고 있습니다. 또한 개인과 기업 모두를 아우르는 종합고용서비스로 고객의 \n\n\n\n성공에 든든한 서포터즈가 되고자 혁신과 발전을 거듭해 나가고 있습니다.", "구인인원": "3", "구인직무": "", "직무 상세소개": "국민취업지원제도 전담자\n\n\n\n\n\n\n\n직무내용: 국민취업지원제도 상담, 행정, 알선, 취업, 참여자 관리 전반", "구인형태": "정규직", "근무조건": "4대보험 가입", "보수": "연 2,950만원", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "직업상담사 2급 또는 사회복지사 2급 필수", "우대사항": "", "실근무지": "수도권 지점(서울, 서울중구, 서울북부)", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "279"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "씨에스쉐어링 주식회사", "대표자명": "임지은", "업종": "응용 소프트웨어 개발 및 공급업", "근로자수": "400", "홈페이지": "www.cssharing.com ", "기업소개": "AI 기술과 전문 인력을 결합한 하이브리드 형태의\n\n혁신적인 CS 아웃소싱 및 AICC(AI 컨택센터) 통합 솔루션 전문 기업 \n\n\n\n\n\n*하이서울 기업", "구인인원": "20", "구인직무": "", "직무 상세소개": "콜센터 멀티상담사\n\n\n\n직무내용: 1.인바운드(콜,채팅,게시판) 2.전산처리,발주업무 등\n\n\n\n*정년 만 60세", "구인형태": "정규직", "근무조건": "4대보험 가입", "보수": "연 216만원 이상(인센티브 별도)", "필요학력": "학력무관", "필요경력": "경력 1년 이상", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "해외여행에 결격사유 없는 자", "우대사항": "컴퓨터 활용가능자, 유사업무 경험우대, 유통경험자 우대, 이커머스경험자 우대 ", "실근무지": "서울특별시 강서구 마곡중앙1로10, 571~520호", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "67"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "한국디지털문해교육협회협동조합", "대표자명": "정진경", "업종": "디지털 문해교육 및 관련 강사 양성교육", "근로자수": "5", "홈페이지": "www.kdlea.co.kr https://cafe.naver.com/digitalwithon", "기업소개": "디지털 세상에서 누구도 소외되지 않도록 디지털 기기 취약층을 대상으로 디지털 문해교육을 하고 있는 강사단체입니다. \n\n\n\n관련 교육 외 &lt;디지털문해교육사&gt; &lt;AI활용교육사&gt; &lt;AI동화출판교육사&gt; 등 디지털 문해교육 관련 자격과정을 운영하여 전문 강사를 양성합니다. ", "구인인원": "5", "구인직무": "", "직무 상세소개": "-구인직무 : 디지털 문해교육(스마트폰, AI, 키오스크, SNS 등) 수업 강사, 보조강사\n\n\n\n 교육 연구(스터디) 참여(온/오프 월 2~3회), 협회 자격과정 참여\n\n\n\n-보수 : 상황별 교육 내용과 역할에 따라 다름\n\n\n\n-자격요건 : 디지털 문해교육 관련 자격증 보유 혹은 취득 예정\n\n-우대사항 : 시니어와 장애인에 대한 깊은 이해도, 교육에 따라 수도권 이동이 가능한 분 \n\n                  40세 이상, 관련 교육 경력 1년 이상 \n\n\n\n-실근무지 : 서울, 경기, 인천\n\n-근무일 : 교육에 따라 기관별, 교육별 비정기적\n\n-근무시간 : 회차별 교육, 회당 2~3시간 ", "구인형태": "프리랜서", "근무조건": "4대보험 미가입", "보수": "상황별 교육 내용과 역할에 따라 다름", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "디지털 문해교육 관련 자격증 보유 혹은 취득 예정", "우대사항": "시니어와 장애인에 대한 깊은 이해도, 교육에 따라 수도권 이동이 가능한 분 \n\n40세 이상, 관련 교육 경력 1년 이상 ", "실근무지": "서울, 경기, 인천", "근무일": "주1일", "근무시간": "1-3시간", "조회수": "195"}, {"모집구분": "일자리관", "당일 채용여부": "당일 채용/향후 채용", "기업명": "주식회사 넥스비아(nexvia Co.,Ltd.)", "대표자명": "최현석", "업종": "응용 소프트웨어 개발 및 공급업", "근로자수": "3", "홈페이지": "https://www.nexvia.co.kr/", "기업소개": "㈜넥스비아는 생성형 AI와 CAD 기술을 기반으로 기업의 업무 생산성과 제조·건축 산업의 디지털 전환(DX·AX)을 지원하는 AI 소프트웨어 전문기업입니다.\n\n\n\nAI 에이전트, 문서 자동화, 업무 프로세스 자동화, 데이터 분석, 지식검색(RAG), 음성인식(STT), OCR 등 다양한 AI 기술을 활용하여 기업과 교육기관이 쉽고 안전하게 AI를 활용할 수 있는 솔루션을 개발하고 있습니다.\n\n\n\n또한 12년 이상의 CAD/CAM 산업 경험과 자체 AI 기술을 결합하여 제조·건축 분야에 특화된 CAD 솔루션을 개발하고 있습니다. 대표적으로 Nexvia CAD Viewer를 통해 STEP, IGES, STL, BREP, OBJ 등 다양한 CAD 파일을 별도 변환 없이 열람하고, 정밀 측정·BOM 생성·물성치 조회·웹 기반 3D 모델 공유가 가능하도록 지원합니다. 특히 2D 도면을 AI로 인식하여 3D 모델로 자동 재구성하는 AI 도면 인식 기술을 개발하며 기존 설계·검토 업무의 자동화를 추진하고 있습니다.\n\n\n\n이와 함께 고객 맞춤형 AI 시스템 구축, 웹·모바일 애플리케이션 개발, 업무 프로세스 자동화 및 AI 교육·산학협력 등을 통해 기업의 업무 효율 향상과 기술 경쟁력 강화를 지원하고 있습니다.", "구인인원": "0", "구인직무": "", "직무 상세소개": "- 마케팅 & 브랜딩 담당자 채용\n\n\n\n자사 마케팅 채널 운영: 블로그, 인스타그램, 링크드인, 유튜브 등 채널별 콘텐츠 기획 및 제작·운영\n\n\n\n오프라인 행사 관리: 국내외 전시회, 박람회, 기업 행사 기획 및 현장 운영 지원\n\n\n\n성과 측정: 마케팅 채널별 유입 데이터 및 반응도 분석\n\n\n\n- 근무조건 : 3개월 수습후 4대보험가입\n\n- 근무일 : 협의가능\n\n- 근무시간 : 협의가능", "구인형태": "정규직", "근무조건": "4대보험 미가입", "보수": "면접시 협의", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "- 소통 능력: 고객사 및 동료들과 원활하고 명확하게 소통할 수 있으신 분\n\n\n\n- 실행력: 마케팅 채널 관리부터 영업 지원까지 적극적이고 책임감 있게 업무를 추친하려는 분\n\n\n\n- 문서 작성 능력: MS Office(Excel, PPT, Word) 또는 한글/노션 등 기본 오피스 툴 활용이 능숙하신 분\n\n\n\n- 콘텐츠 제작 능력: 포토샵, 캔바(Canva), 프리미어 등 디자인/영상 편집 툴 활용이 가능하신 분\n\n\n\n- CRM/IT 툴 경험: CRM 툴(노션, 세일즈포스, 스티비 등) 사용 경험이 있으신 분\n\n\n\n- B2B 경험: B2B 영업 지원, 마케팅, 프로젝트 관리 경험이 있으신 분\n\n\n\n- 전시회 경험: 오프라인 전시회나 행사 기획/참여 경험이 있으신 분", "실근무지": "서울 금천구 가산동", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "88"}, {"모집구분": "일자리관", "당일 채용여부": "프리랜서", "기업명": "주식회사 브랜드플레이스", "대표자명": "임철현", "업종": "정보통신업, 서비스업", "근로자수": "27", "홈페이지": "https://devlopent.kr/", "기업소개": "㈜브랜드플레이스는 디지털 콘텐츠와 크리에이터 산업을 기반으로 성장하고 있는 종합 비즈니스 기업입니다.\n\n\n\n TikTok LIVE 전문 사업부 ‘DEVELOP Entertainment’를 중심으로 \n\n크리에이터 발굴·교육·운영, 광고·마케팅, 모바일 서비스, 매니지먼트 등 다양한 사업을 전개하고 있으며, \n\n\n\n체계적인 교육 시스템과 데이터 기반 운영을 통해 사람과 기업이 함께 성장하는 \n\n지속 가능한 비즈니스 구조를 만들어가고 있습니다.", "구인인원": "0", "구인직무": "", "직무 상세소개": "콘텐츠 크리에이터\n\n\n\n*시니어일자리", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주5일", "근무시간": "4-7시간", "조회수": "93"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "(주)유베이스", "대표자명": "목진원", "업종": "서비스업", "근로자수": "10000", "홈페이지": "https://ubase.co.kr/Recruit/No", "기업소개": "콜센터 및 텔레마케팅 서비스업을 제공합니다.", "구인인원": "20", "구인직무": "", "직무 상세소개": "고객센터 인바운드 상담 업무\n\n\n\n*정년 만 60세", "구인형태": "정규직", "근무조건": "4대보험 가입", "보수": "2,156,800~3,000,000원", "필요학력": "", "필요경력": "경력무관", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "경기 부천시 원미구 부일로 223, 투나빌딩", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "113"}, {"모집구분": "일자리관", "당일 채용여부": "당일 채용", "기업명": "주식회사 와우리츠", "대표자명": "허효민", "업종": "부동산업", "근로자수": "60", "홈페이지": "www.wreits.co.kr", "기업소개": "부동산 개발, 공급, 분양대행, 경매컨설팅", "구인인원": "30", "구인직무": "", "직무 상세소개": "전화 상담과 업무 및 고객 관리\n\n\n\n정년: 만 63세\n\n\n\n\n\n- 근무시간 : 7시간 (휴식시간 포함)\n\n*인센티브 있음", "구인형태": "정규직", "근무조건": "4대보험 미가입", "보수": "월 200만원(인센티브 별도)", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "강남구 테헤란로", "근무일": "주5일", "근무시간": "4-7시간", "조회수": "63"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "㈜이지태스크", "대표자명": "전혜진", "업종": "정보통신업, 사업시설괸리등", "근로자수": "40", "홈페이지": "EasyTask.co.kr", "기업소개": "㈜이지태스크는 ai기술을 기반으로 한 실시간 시간제 사무보조 매칭 플랫폼 기업  입니다.\n\n\n\n주요서비스는 자료조사, 문서작성, 간단한 디자인등 단기 반복사무업무에  대해서 \n\n\n\n인재를 실시간 연결하고 정규채용  부담없이 필요한 시간만큼 \n\n\n\n맞춤형 긱워크(gig worker)를 활용 ai매칭부터 \n\n실시간 소통 , 파일공유, 비용 및 증명서 처리까지 통합 지원하는 회사입니다", "구인인원": "0", "구인직무": "", "직무 상세소개": "사무보조 및 법인고객 영업", "구인형태": "프리랜서", "근무조건": "4대보험 가입", "보수": "시급 1만원", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": " ※ 관련직무 경력자, 컴퓨터관리 자격증 소지자", "실근무지": " 역삼동 본사 및 재택근무", "근무일": "주5일", "근무시간": "1-3시간", "조회수": "70"}, {"모집구분": "일자리관", "당일 채용여부": "창업", "기업명": "㈜코리아세븐", "대표자명": "김대일", "업종": "도소매, 상품연쇄화사업", "근로자수": "1545", "홈페이지": "https://www.7-eleven.co.kr/", "기업소개": "세계 1등 글로벌 편의점 브랜드 세븐일레븐입니다.\n\n", "구인인원": "0", "구인직무": "", "직무 상세소개": "세븐일레븐 경영주 창업\n\n\n\n세븐일레븐에서는 새로운 트렌드를 경험하며, 변화된 삶을 만날 수 있습니다.\n\n\n\n세븐일레븐은 New Wave Concept 전국 확대를 통해 편의점의 미래를 제시하고 있습니다.\n\n\n\n고객이 원하는 상품과 서비스로 브랜드 경쟁력을 강화하고 있습니다.\n\n\n\n*박람회 현장에서는 세븐일레븐 경영주 창업 관련 상담이 진행될 예정입니다.\n\n*시니어일자리", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "* 취업이 아닌 창업입니다.", "우대사항": "* 취업이 아닌 창업입니다.", "실근무지": "", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "56"}, {"모집구분": "일자리관", "당일 채용여부": "창업", "기업명": "㈜ 지앤지커머스", "대표자명": "모영일", "업종": "도소매", "근로자수": "51", "홈페이지": "https://gng.ggook.com", "기업소개": "지앤지커머스는 국내 최대 종합 B2B 도매꾹/ 도매매를 운영 중입니다. \n\n또한 지앤지커머스에서는 온라인 유통 소상공인들을 양성하기 위해 \n\n도매꾹도매매교육센터를 2017년부터 운영하고 있습니다.\n\n\n\n50플러스센터와 협업하여 온라인 창업자 교육 또한 진행하고 있으며 \n\n지속적으로 실제 매출을 가진 온라인 창업자를 양성하는 데 힘쓰고 있습니다,", "구인인원": "0", "구인직무": "", "직무 상세소개": "(창업) 온라인셀러\n\n\n\n온라인 오픈마켓에 상품을 올려 판매(재고 없이 소자본으로 가능)하고, 차익을 실현한다. \n\n\n\n*정년 만 65세", "구인형태": "프리랜서", "근무조건": "4대보험 미가입", "보수": "개인마다 다름", "필요학력": "", "필요경력": "경력무관", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "엑셀 다룰 수 있을 시 업무가 좀 더 쉽습니다.", "실근무지": "자택에서 가능", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "64"}, {"모집구분": "일자리관", "당일 채용여부": "창업", "기업명": "㈜비지에프리테일", "대표자명": "민승배", "업종": "편의점(CVS)", "근로자수": "2608", "홈페이지": "https://cu.bgfretail.com", "기업소개": " 당사는 전국 18,700개의 CU 편의점을 운영하고 있는 법인으로, 편의점 전문 기업입니다.\n\n 2012년 독자 브랜드 CU를 출범한 이래, BGF리테일은 한국형 편의점의 새로운 모델을 제시하고 있습니다. \n\n\n\n 은퇴 직장인, 창업 희망자들에게 박람회 또는 창업교육을 통해 재취업 외의 유망한 대안이 될 수 있는\n\n 창업이라는 새로운 기회를 제공하고, 희망자분들은 당사가 준비한 프로모션을 적용해\n\n 다양한 경로로 창업을 지원 받을 수 있습니다.\n\n\n\n 당사는 일자리 박람회를 통해 새로운 일자리를 찾는 분들께 다양한 기회를 제공하고, \n\n창업을 통해 새로운 경로를 모색할 수 있기를 기대합니다.", "구인인원": "0", "구인직무": "", "직무 상세소개": "씨유 편의점 가맹점주\n\n\n\n씨유 편의점 가맹점 운영\n\n\n\n*시니어일자리", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "전국", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "37"}, {"모집구분": "일자리관", "당일 채용여부": "당일 채용", "기업명": "마더앤베이비 산후도우미", "대표자명": "정혜윤", "업종": "서비스", "근로자수": "1", "홈페이지": "www.mothernbaby.co.kr", "기업소개": "마더앤베이비는 보건복지부 인증 정부바우처 서비스제공기관으로\n\n 경험많고 숙련된 산모신생아 건강관리사가 산모와 신생아의 건강한 회복을 최우선 가치로 서비스를 제공합니다. \n\n2025년 사회서비스 제공기관 평가 A등급 기관으로 강남구 지역 누적이용자수 1위 우수업체입니다. ", "구인인원": "0", "구인직무": "", "직무 상세소개": "산모신생아건강관리사\n\n\n\n• 산모 회복과 산후관리 지원\n\n\n\n• 신생아 수유와 수면 케어\n\n\n\n• 산모와 신생아의 위생관리(목욕)와 환경정리(간단한 가사)\n\n\n\n• 산모 식사 준비\n\n\n\n*시니어일자리", "구인형태": "프리랜서", "근무조건": "4대보험 미가입", "보수": "일급 109,800원 이상", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "산모신생아 건강관리사 양성과정 수료하신 분(필수)", "우대사항": "관련 경력(산후도우미, 간호조무사, 조리원) 있으신 분 업계최고 대우", "실근무지": " 서비스 신청 산모 가정(거주지 인근 배정)", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "21"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "주식회사 비더퍼스트엠", "대표자명": "김승준", "업종": "교육서비스업", "근로자수": "6", "홈페이지": "httph://btfm.or.kr", "기업소개": "㈜비더퍼스트엠은 자체 플랫폼 &#39;카인드&#39;를 통해 \n\n병원동행, 생활동행, 이동 서비스를 제공하는 모빌리티&케어 전문 기업입니다. \n\n\n\nIT 기반 운영 시스템과 체계적인 서비스 관리로 고객에게 안전하고 신뢰할 수 있는 이동 서비스를 제공하며, \n\n더 나은 일상과 사회적 가치를 만들어가고 있습니다.", "구인인원": "300", "구인직무": "", "직무 상세소개": "통합돌봄(병원동행/생활동행)매니저\n\n\n\n직무내용:\n\n\n\n1. 병원동행: 의료기관 방문이 필요한 고객의 이동 및 진료 과정을 지원\n\n\n\n2. 생활동행: 일상생활이 어려운 고객의 외출, 장보기, 관공서 방문 등의 활동을 지원\n\n\n\n*정년 만 65세", "구인형태": "프리랜서", "근무조건": "4대보험 미가입", "보수": "약 월 300만원", "필요학력": "", "필요경력": "경력무관", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "사회복지사, 요양보호사, 병원동행매니저 자격증 소지자", "실근무지": "수도권 내 종합병원", "근무일": "주5일", "근무시간": "4-7시간", "조회수": "133"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "서울시 아이돌봄광역지원센터", "대표자명": "박정숙", "업종": "기타사업서비스", "근로자수": "4264", "홈페이지": "https://care.idolbom.go.kr/dol", "기업소개": "서울시여성가족재단이 서울시로부터 아이돌봄광역지원센터를 수탁받아 운영하고 있습니다. \n\n\n\n아이돌봄광역지원센터는 서울시 25개 자치구의 아이돌봄 서비스제공기관에서 \n\n아이돌봄 이용자 가정과 아이돌봄사를 연계하고 있으며, \n\n\n\n아이돌봄광역센터로써 서비스제공기관과 양성 교육기관을 지원하며 채용지원 등 수급 관리에 힘쓰고 있습니다.", "구인인원": "250", "구인직무": "", "직무 상세소개": "아이돌봄사\n\n\n\n\n\n\n\n직무내용: 생후 3개월~12세 이하 아동의 가정 내 아이돌봄서비스 제공 \n\n\n\n  (등·하원 지원, 놀이 지원, 간식 챙겨주기 및 안전관리 등 이용 가정 방문 돌봄)\n\n\n\n\n\n\n\n*비고\n\n\n\n-근무요일: 주1일~주7일\n\n\n\n-근무시간: 일1~3시간부터 일 8시간 이상\n\n\n\n-실근무지 : 서울시(관할 지역 내 서비스 이용자 가정) *25개 자치구의 각 센터 소속으로 활동", "구인형태": "정규직", "근무조건": "4대보험 가입", "보수": "시급 11,120원", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "-아이돌봄사 자격증 소지자 및 아이돌봄사 양성교육과정 수료자\n\n\n\n-보육교사‧교사‧의료인 등 관련 자격 소지자\n\n\n\n-간호조무사‧사회복지사‧요양보호사 등 유사자격 소지자", "우대사항": "", "실근무지": "서울시(관할 지역 내 서비스 이용자 가정)", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "70"}, {"모집구분": "일자리관", "당일 채용여부": "당일 채용", "기업명": "주식회사 제이비", "대표자명": "정만호", "업종": "일반화물운송", "근로자수": "39", "홈페이지": "www.제이비물류.com", "기업소개": "국내 화물차 물류 운송의 중견 기업으로 \n\n서울시장 표창, 하남시장 표창, 경기도지사 표창을 수여하였으며\n\n 20여년의 사업 지속 성장 유지와 한진, cj택배 등 대기업과 직계약으로 국내 물류 운송을 책임지고 있는 기업입니다.", "구인인원": "0", "구인직무": "", "직무 상세소개": "직무 1. 5톤 윙바디 화물차 운전기사\n\n\n\n업무 : 5톤 윙바디 화물차 기사로 주거지역에서 대전까지 1회 순환 운전\n\n\n\n\n\n직무 2. 배차팀(배차담당) 야간근무\n\n\n\n업무 : 화물차 이동 지역과 시간 스케줄 지시 업무\n\n\n\n- 구인형태 : 정규직\n\n- 구인인원 : 1명\n\n- 실근무지 : 하남시 본사\n\n- 근무조건 : 4대보험, 인센티브\n\n- 보수 : 연봉 4000만원\n\n- 자격요건 : 학력, 연령 무관\n\n- 우대사항 : 경력자 우대\n\n\n\n*정년 만 65세", "구인형태": "정규직", "근무조건": "4대보험 미가입", "보수": "800만원", "필요학력": "", "필요경력": "경력무관", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "1종 보통면허, 1종 대형면허, 화물차운송자격증", "우대사항": "", "실근무지": "본인 주거 지역", "근무일": "주6일", "근무시간": "8시간 이상", "조회수": "56"}, {"모집구분": "일자리관", "당일 채용여부": "당일 채용", "기업명": "주식회사 서울미래(서울미래지식평생교육원)", "대표자명": "이계순", "업종": "평생교육원, 도매 및 소매업", "근로자수": "5", "홈페이지": "", "기업소개": "당사는 고용노동부 지정 예비 사회적기업으로 \n\n저소득 취약계층의 경제적 사회적 자립 지원으로 ‘AI 강좌’ 등 사회교육서비스를 제공하고 있으며, \n\n아울러 ‘마음돌봄장비’인 VR 개발 및 판매로 공익을 추진하고 있는 신생 기업입니다.", "구인인원": "1", "구인직무": "", "직무 상세소개": "사무행정 및 마케팅\n\n\n\n*시니어일자리\n\n*정년 만 70세", "구인형태": "계약직", "근무조건": "4대보험 가입", "보수": "", "필요학력": "", "필요경력": "경력 1년 이상", "연령제한": "70세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "경력사항: 1~3년 ", "우대사항": "AI 관련 자격증 소지자", "실근무지": "서울 동대문구 천호대로 9 명일빌딩 3층", "근무일": "주3일", "근무시간": "4-7시간", "조회수": "188"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "주식회사 지식창의자기계발센터", "대표자명": "배금진", "업종": "서비스업 / 제조업 / 도매 및 소매업", "근로자수": "1", "홈페이지": "www.aigptart.com", "기업소개": "(주)지식창의자기계발센터\n\nAI × 문화예술 × 교육 × 출판 × 박물관 콘텐츠\n\n주요 콘텐츠: MY MUSEUM WORLD™ · 세계 암각화 · AI 창작교육 · 출판·전자책\n\n\n\n\n\n주식회사 지식창의자기계발센터는 개인의 경험과 전문지식을 발굴하여\n\n 책·교육·문화콘텐츠로 개발하는 지식창의 교육기업입니다.\n\n\n\n 중장년·시니어가 평생 축적한 직업 경험, 전문지식, 삶의 지혜를 기록하고 \n\n다음 세대에 전할 수 있도록 1:1 책쓰기·출판 코칭 및 교육 콘텐츠 개발 서비스를 제공합니다.", "구인인원": "1", "구인직무": "", "직무 상세소개": "AI와 문화예술이 만나는 새로운 일자리\n\n당신의 경험과 재능을 AI로 새로운 콘텐츠와 일자리로 연결합니다.\n\n\n\n&lt;모집분야&gt;\n\n1. AI 콘텐츠 기획·제작 담당자 | 1~2명 \n\n•\tAI 콘텐츠 기획 및 제작\n\n•\t세계 암각화·박물관 교육콘텐츠 자료 정리\n\n•\t도서·전자책·온라인 콘텐츠 제작 보조\n\n•\t캐릭터·이미지·영상 제작 지원\n\n\n\n\n\n2. 온라인 홍보·운영 담당자 | 1~2명 \n\n•\tSNS 및 온라인 채널 운영\n\n•\t블로그·카페·SNS 콘텐츠 관리\n\n•\t교육 및 행사 홍보\n\n•\t고객 문의 및 신청 관리\n\n\n\n\n\n3. 문화·출판 콘텐츠 지원 담당자 | 1~2명 \n\n•\t도서 및 전자책 출판 업무 지원\n\n•\t교육 프로그램 운영 및 자료관리\n\n•\t전시·체험 프로그램 준비\n\n•\t기관 협력 및 행정업무 지원\n\n\n\n\n\n&lt;근무조건&gt;\n\n근무형태: 정규직 / 계약직 / 파트타임 중 협의\n\n근무시간: 주 20~40시간, 협의 가능\n\n근무지역: 인천광역시 및 온라인 병행\n\n급여: 경력·직무·근무형태에 따라 협의\n\n지원대상: 중장년 경력자 우대 / AI 초보자 지원 가능\n\n\n\n\n\n이런 분을 기다립니다\n\n문화예술·교육·출판·박물관 분야에 관심 있는 분, 새로운 AI 기술을 배우고 활용하고 싶은 분, 자신의 기존 경력과 전문성을 새로운 일로 연결하고 싶은 분을 환영합니다.\n\nAI를 이미 잘하는 사람만을 모집하는 것이 아니라, 자신의 경험을 AI와 결합해 새로운 일을 만들어갈 분을 찾습니다.\n\n\n\n\n\n&lt;채용절차&gt;\n\n박람회 현장상담 → 면접 → 최종협의\n\n\n\n\n\n&lt;박람회 현장 이벤트&gt;\n\n100&#37; 당첨! AI 행운 스크래치\n\n1등 AI 퍼스널 브랜드 만들기 — AI 로고 + 디지털 명함\n\n2등 나만의 이름 노래 만들기 — AI 음악 제작\n\n3등 AI 진로 콘텐츠 체험권 — 나의 경험을 콘텐츠 아이디어로 만들기\n\n참여자 전원: 《AI로 전자책 쓰기》 PDF + AI 책쓰기 세미나 초대권\n\n", "구인형태": "정규직", "근무조건": "4대보험 미가입", "보수": "경력,직무,근무형태에 따라 협의", "필요학력": "", "필요경력": "경력 1년 이상", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "중장년 경력자 우대 / AI 초보자 지원 가능", "우대사항": "출판·교육·문화콘텐츠 분야 경력자 우대", "실근무지": "인천광역시 및 온라인 병행", "근무일": "주5일", "근무시간": "4-7시간", "조회수": "122"}, {"모집구분": "일자리관", "당일 채용여부": "당일 채용", "기업명": "주식회사 제광", "대표자명": "서제민", "업종": "물류 컨설팅", "근로자수": "12", "홈페이지": "jegwang1.imweb.me", "기업소개": "제광은 전국 물류 인재의 모집과 선발을 전문으로 하는 기업입니다.\n\n\n\n\n\n\n\n체계적인 채용 프로세스로 안정적인 인력 운영을 지원합니다.", "구인인원": "100", "구인직무": "", "직무 상세소개": "현장 배송직\n\n\n\n거주지 인근 고정 구역 및 담당권역 內 소화물 배송\n\n\n\n* 고용보험, 산재보험 가입\n\n\n\n*시니어일자리", "구인형태": "계약직", "근무조건": "기타", "보수": "412만원", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "최근 5년 이내 음주취소 등 운전결격사유 없으신 분, 화물운송종사자 자격증 소지자 우대", "실근무지": "전국 어디든 거주지 인근에서 근무", "근무일": "주6일", "근무시간": "8시간 이상", "조회수": "100"}, {"모집구분": "일자리관", "당일 채용여부": "당일 채용", "기업명": "주식회사 에이치케이지", "대표자명": "전대만", "업종": "사업 및 무형 재산권 중개업", "근로자수": "26", "홈페이지": "www.hankgolf.com", "기업소개": "(주)에이치케이지는 2006년 대한민국 골퍼들의 삶을 풍요롭게! 만들겠다는 비전을 가지고 창립하여, 해외 골프 회원권 중개사업을 중심으로 고객과의 신뢰를 쌓아왔습니다.\n\n\n\n21년간의 서비스 노하우와 경험, 사업구조를 기반으로, 주요 아시아 6개국의 프리미엄 골프 회원권 서비스를 제공하고 있으며, 현재는 단순 회원권 중개에서 벗어나 플랫폼을 통한 회원관리 및 예약, 여행 서비스를 제공하는 골프 종합 플랫폼 기업으로 발전하였습니다.\n\n\n\n㈜에이치케이지는 골프를 중심으로 여행과 라이프스타일이 결합된 비즈니스 모델을 확장하여, 글로벌 골프 플랫폼 기업으로 성장해 나갈 것입니다.", "구인인원": "0", "구인직무": "", "직무 상세소개": "영업\n\n\n\n해외 골프 회원권 판매 및 컨설팅, 신규 고객사 발굴 및 관계 구축", "구인형태": "계약직", "근무조건": "4대보험 가입", "보수": "연 4,000만원 + 인센티브 별도 ", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "B2B, B2C 영업 경력자 우대 /  금융 및 제약, 보험사 영업 경력자\n\n\n\n골프 산업 및 레저 영업 유경험자 / 골프 라이선스 소지자(KPGA,KLPGA 등)", "실근무지": "경기 과천시 과천대로12길 117", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "114"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "주식회사 고래투어(GO-RE Tour co.,Ltd.)", "대표자명": "이재인", "업종": "여행사업", "근로자수": "3", "홈페이지": "https://www.goretour.kr/", "기업소개": "주식회사 고래투어는 고객의 여행 목적과 취향에 맞는 맞춤형 여행 서비스를 제공하는 프리미엄 여행 전문기업입니다. \n\n\n\n‘단순히 떠나는 여행을 넘어, 삶에 새로운 활력을 더하는 여행’을 지향하며 개인·가족 여행부터 \n\n기업 출장, 단체 연수, 인센티브 투어, 해외 행사 및 테마 여행까지 다양한 여행 상품을 기획하고 운영하고 있습니다.\n\n\n\n고래투어는 정형화된 패키지 상품을 일괄적으로 판매하기보다 고객의 여행 인원, 예산, 일정, 선호 지역과 여행 목적을 세심하게 분석하여 최적의 항공편과 호텔, 교통편, 관광 일정 및 현지 체험을 구성합니다. \n\n\n\n특히 소규모 단독 여행과 프리미엄 맞춤 여행을 중심으로 고객이 보다 편안하고 만족도 높은 여행을 경험할 수 있도록 상담부터 예약, 출발 전 안내, 현지 일정 운영, 귀국 후 관리까지 전 과정을 책임감 있게 지원하고 있습니다.\n\n\n\n또한 국내외 호텔, 항공사, 현지 여행사 및 관광 관련 업체와의 협업을 바탕으로 경쟁력 있는 상품을 개발하고 있으며, 일본을 비롯한 동남아시아, 유럽, 아이슬란드 등 다양한 지역의 여행을 진행하고 있습니다. \n\n\n\n후쿠오카를 포함한 일본 지역은 접근성이 뛰어나 자유여행, 가족여행, 기업 단체 및 소규모 프리미엄 여행 수요가 꾸준한 만큼, 고객의 목적에 맞는 호텔과 지역 콘텐츠를 연계한 상품 개발에도 집중하고 있습니다.", "구인인원": "2", "구인직무": "", "직무 상세소개": "- MICE 행사 영업\n\n\n\nMICE 행사 영업 및 상용 거래처 개척\n\n\n\n\n\n- B2B 영업 관리자 및 인솔자 모심", "구인형태": "계약직", "근무조건": "4대보험 가입", "보수": "연 2,800만원", "필요학력": "", "필요경력": "경력 5년 이상", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "서울시 강서구 마곡중앙로 161-8", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "68"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "유앤시니어사회적협동조합", "대표자명": "신옥균", "업종": "교육서비스/취업준비교육사업", "근로자수": "4", "홈페이지": "www.unsenior.or.kr", "기업소개": "유앤시니어사회적협동조합은 \n\n중장년과 시니어의 경험이 다시 사회적 가치로 이어질 수 있도록 지원하는 일자리 전문 사회적경제조직입니다.\n\n\n\n공공일자리 사업, 맞춤형 취업상담 및 교육, 구인·구직 매칭을 통해 지속가능한 일자리 창출에 힘쓰고 있습니다.\n\n\n\n특히 외식업 분야 소상공인의 인력난을 해소하고 \n\n중장년을 비롯한 구직자에게 적합한 취업기회를 제공하기 위해\n\n 서울시 「소상공인 인력 운영 지원사업」 수행기관으로 선정되어 무료직업소개소를 운영하고 있습니다.\n\n\n\n\n\n최근 예비사회적기업으로 지정되어 사회적 가치 실현 노력과 성장 가능성을 공식적으로 인정받았습니다.\n\n\n\n\n\n앞으로 디지털 기반의 신뢰도 높은 일자리 연계체계를 구축하여 중장년과 시니어의 안정적인 일자리 창출에 기여하고자 합니다.", "구인인원": "100", "구인직무": "", "직무 상세소개": "구인직무 : 외식업분야 (조리사, 조리보조, 서빙, 설거지 등)\n\n\n\n구인형태 : 일용직, 상용직, 아르바이트\n\n근무일 : 협의 가능 (주2일~주6일)\n\n근무시간 : 협의 가능 (4시간~8시간)\n\n\n\n\n\n\n\n▪외식업 맞춤형 1:1 취업상담\n\n 구직자의 경력, 희망지역, 근무시간, 근무 가능여건(건강상태 등) 등을 확인하여 조리보조, 홀서비스, 세척, 식재료 전처리, 포장, 매장관리 등 적합한 직무를 추천\n\n\n\n▪현장 구직등록 및 일자리 정보 제공\n\n QR 또는 서면으로 간편하게 구직등록을 지원하고, 사전에 확보한 외식업체의 근무지역·시간·급여·직무별 채용정보 제공\n\n\n\n▪일자리 알선 및 사후관리\n\n 구직조건에 맞는 업체를 현장에서 추천하고, 박람회 종료 후에도 업체 알선, 면접   일정 조율, 취업 여부 확인 등 후속 지원 실시", "구인형태": "파트타임", "근무조건": "4대보험 가입", "보수": "협의", "필요학력": "학력무관", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "경력무관", "우대사항": "외식업분야 경력 우대", "실근무지": "", "근무일": "주3일", "근무시간": "4-7시간", "조회수": "116"}, {"모집구분": "일자리관", "당일 채용여부": "당일 채용/향후 채용", "기업명": "㈜벽제", "대표자명": "김태현", "업종": "음식점업/한식", "근로자수": "140", "홈페이지": "www.bjgalbi.com", "기업소개": " 한국의 식문화를 대표하는 외식 브랜드 &#34;한식벽제그룹&#34;은 1986년 창립 이래 &#39;벽제갈비&#39;, &#39;봉피양&#39;, &#39;운정&#39; 등 프리미엄 한식 브랜드를 선보이며 한식, 한우, K-BBQ 등 글로벌 한식 문화를 선도하는 기업입니다. \n\n\n\n\n\n\n\n 글로벌 한식 컨퍼런스 및 한식 위크숍 참여, 미쉐린가이드 서울, 아시아 월스트리트저널 5대 레스로랑 선정 등 세계로부터 프리미엄 한식의 대표주자로 평가 받고 있습니다.", "구인인원": "10", "구인직무": "", "직무 상세소개": "1. 구인직무 : 홀서비스/주방보조/생산직(식품)\n\n\n\n  1) 홀서비스 : 고객응대 및 서빙, 매장관리 등\n\n  2) 주방보조 : 메뉴 조리, 위생관리, 재고관리 등\n\n  3) 생산직(식품) : 탕류 생산 및 포장 업무 등 \n\n\n\n\n\n2. 보수 \n\n  1) 홀서비스/주방보조 : 월 280만 (경력직 협의)\n\n  2) 생산직(식품) : 월 270만 (경력직 협의)\n\n\n\n\n\n3. 실근무지\n\n   서울(송파구/강남구 등), 경기(성남시, 광주시 등)   *기숙사 제공 가능(송파, 분당, 광주)", "구인형태": "정규직", "근무조건": "4대보험 미가입", "보수": "1) 280만,  2) 270만", "필요학력": "", "필요경력": "경력무관", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "서울(송파구/강남구 등), 경기(성남시, 광주시 등)", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "45"}, {"모집구분": "일자리관", "당일 채용여부": "당일 채용/향후 채용", "기업명": "㈜아이콘즈", "대표자명": "전현준", "업종": "음식프랜차이즈", "근로자수": "200", "홈페이지": "www.originalpancakehouse.co.kr", "기업소개": "아이콘즈는 혁신과 품질을 기반으로 고객에게 최상의 경험을 제공하는 외식 서비스 전문기업입니다. \n\n\n\n오리지널팬케이크하우스, 피기피자, 광릉옥 등 정통의 가치를 담은 브랜드를 선보이며, \n\n쉽게 사라지는 트렌드를 지양하고 시간이 지날수록 더 빛나는 음식과 공간을 만들어왔습니다. \n\n\n\n아이콘즈는 당신의 도전을 기다립니다.", "구인인원": "0", "구인직무": "", "직무 상세소개": "홀 /  주방\n\n\n\n홀 : 테이블 정리 및 기타 홀 업무\n\n\n\n주방 : 설거지 및 식자재 준비\n\n\n\n*시니어일자리", "구인형태": "정규직", "근무조건": "4대보험 가입", "보수": "회사 내규에 따름", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "관련 업무 경험자 우대", "실근무지": "사는곳 근거리 매장 발령", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "27"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "(주)후니드", "대표자명": "손병재, 김진무", "업종": "사업시설 유지,관리 서비스업", "근로자수": "2427", "홈페이지": "www.whoneed.co.kr", "기업소개": "(주)후니드는 2004년 설립된 회사로 자본금 10억원, 매출액 2,400억, 사원수 2,400명 규모의 중견기업입니다. \n\n\n\n위탁급식, 인적서비스, 방송, 시설관리 사업을 하고 있습니다.", "구인인원": "0", "구인직무": "", "직무 상세소개": "1. 특급호텔 객실정비원(룸메이드)\n\n\n\n호텔 객실 정비\n\n\n\n*정년 만 65세\n\n\n\n\n\n2.  호텔 차량 운전기사\n\n\n\n호텔 내/외부 고객 운행 차량\n\n(45인승 셔틀버스, 마이티, 승용차량 등 전 차량)\n\n\n\n- 구인인원 : 2명\n\n- 근무지 : 서울시 광진구 워커힐로 177\n\n- 고용보험, 4대보험 가입\n\n- 셔틀버스, 중식 제공\n\n\n\n\n\n*정년 만 55세\n\n", "구인형태": "계약직", "근무조건": "4대보험 가입", "보수": "룸메이드 240만/ 운전기사 279만", "필요학력": "", "필요경력": "경력무관", "연령제한": "65세 미만 지원가능", "성별제한": "성별제한 없음", "자격요건": "1. 특급호텔 객실정비원(룸메이드)\n\n\n\n- 스케쥴근무 및 주말근무가능자\n\n- 신체 건강한 자\n\n\n\n\n\n\n\n2. 호텔 차량 운전기사\n\n\n\n- 45인승 셔틀버스, 마이티, 승용차량 등 전 차량 운행 가능자\n\n- 동종 업계 경력 1-3년\n\n", "우대사항": "", "실근무지": "서울시 광진구 워커힐로 177", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "89"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "㈜플랫포머스 / 클린베테랑", "대표자명": "설재훈", "업종": "온라인 플랫폼 운영", "근로자수": "6", "홈페이지": "https://clean.veteranscout.co.", "기업소개": "청소의 모든 베테랑들은 모여라! 클린베테랑은 언제나 문이 열려있습니다.", "구인인원": "10", "구인직무": "", "직무 상세소개": "사업장 청소\n\n\n\n사업장 청소 (병원, 학원, 사무실, 건물청소 등)\n\n\n\n*시니어일자리", "구인형태": "프리랜서", "근무조건": "4대보험 미가입", "보수": "시급 12,500~13,500원", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "서울 전지역 사업장", "근무일": "주5일", "근무시간": "1-3시간", "조회수": "40"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "㈜청연", "대표자명": "연현주", "업종": "유료직업소개업", "근로자수": "102", "홈페이지": "https://www.chyeon.com/manager_apply", "기업소개": "청소가 필요한 사용자와 청소 일자리가 필요한 구직자를 모바일 앱과 시스템을 통해 매칭하고 운영하고 있습니다.", "구인인원": "20", "구인직무": "", "직무 상세소개": "플랫폼종사 청소매니저 \n\n\n\n가정 방문 생활청소, 사무실 청소, 어르신 돌봄, 1인 정리수납\n\n\n\n* 해당 직무는 매니저가 본인의 일정에 따라 자유롭게 활동하는 형태의 직무입니다.\n\n- 근무일 : (자율선택) 플랫폼활동\n\n- 근무시간 : (자율선택) 플랫폼활동\n\n\n\n*시니어일자리", "구인형태": "프리랜서", "근무조건": "4대보험 미가입", "보수": "시급 12,300원~25,000원", "필요학력": "", "필요경력": "경력무관", "연령제한": "75세 미만 지원가능", "성별제한": "여성만 지원가능", "자격요건": "여성만 가능", "우대사항": "", "실근무지": "", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "38"}, {"모집구분": "일자리관", "당일 채용여부": "당일 채용", "기업명": "참사랑씨앤이(참사랑어머니회)", "대표자명": "박진우", "업종": "산후관리사/가사관리사", "근로자수": "20", "홈페이지": "charmlove.co.kr", "기업소개": "1998년 국내최초 산후관리사 파견서비스기관\n\n\n\n전국50개지점 산후관리사 제공기관운영\n\n\n\n보건복지부 산모신생아건강관리사 제공기관/교육기관\n\n\n\n서울형가사서비스 2023녀~2026년 4년연속 제공기관선정운영 ", "구인인원": "10", "구인직무": "", "직무 상세소개": "산후관리사, 가사관리사 모집\n\n\n\n산후관리사(출산가정 산후조리지원업무), 가사관리사(대상자가정 가사지원업무)", "구인형태": "정규직", "근무조건": "4대보험 가입", "보수": "220만원", "필요학력": "학력무관", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "경력무관/신입가능", "우대사항": "", "실근무지": "가사관리사:서울시전역 /산후관리사:서초,강남,송파,강동", "근무일": "주5일", "근무시간": "8시간 이상", "조회수": "0"}, {"모집구분": "일자리관", "당일 채용여부": "향후 채용", "기업명": "(주)예스콘씨에스", "대표자명": "이영래", "업종": "서비스업", "근로자수": "400", "홈페이지": "http://www.yeskon.co.kr/", "기업소개": "인력 파견 전문 아웃소싱 기업", "구인인원": "0", "구인직무": "", "직무 상세소개": "", "구인형태": "정규직", "근무조건": "4대보험 가입", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "11"}, {"모집구분": "중장년 친화 산업관", "당일 채용여부": "X", "기업명": "대상웰라이프", "대표자명": "", "업종": "", "근로자수": "", "홈페이지": "", "기업소개": "※ 준비중입니다.", "구인인원": "미정", "구인직무": "", "직무 상세소개": "※ 채용 진행하지 않음", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "23"}, {"모집구분": "중장년 친화 산업관", "당일 채용여부": "X", "기업명": "(주)신한은행 서울시청금융센터", "대표자명": "문택모", "업종": "금융업", "근로자수": "23", "홈페이지": "www.shinhan.com", "기업소개": "서울시 금고관련 업무와 임직원 및 시민들의 금융 서비스를 전담하는 신한은행 영업점\n\n\n\n*부스 콘텐츠\n\n:신한은행 금융앱(슈퍼 SOL)을 통한 금융서비스 안내 및 걸어요50+, 연금 등 중장년 맞춤 금융서비스 상담 및 제공", "구인인원": "없음", "구인직무": "", "직무 상세소개": "※ 채용 진행하지 않음.   본 기업은 중장년 친화 산업관 참여기업으로, 박람회장에서 채용정보 제공 및 채용을 진행하지 않습니다.", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "48"}, {"모집구분": "중장년 친화 산업관", "당일 채용여부": "X", "기업명": "㈜이투데이피엔씨 (브라보마이라이프)", "대표자명": "김상우", "업종": "서비스, 출판업외", "근로자수": "11", "홈페이지": "https://bravo.etoday.co.kr/", "기업소개": " ㈜이투데이피엔씨는 50+세대의 라이프스타일을 집중 조명하는 \n\n시니어 넘버원 미디어 ‘브라보 마이 라이프’를 발행하고,\n\n ‘비바브라보’ 브랜드를 통해 문화·패션·교육·커뮤니티 등 \n\n\n\n중장년층을 위한 다양한 라이프스타일 사업을 전개하고 있습니다", "구인인원": "없음", "구인직무": "", "직무 상세소개": "※ 채용 진행하지 않음.   본 기업은 중장년 친화 산업관 참여기업으로, 박람회장에서 채용정보 제공 및 채용을 진행하지 않습니다.", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "16"}, {"모집구분": "중장년 친화 산업관", "당일 채용여부": "향후 채용", "기업명": "㈜대교뉴이프", "대표자명": "김경호", "업종": "교육위탁사업 ", "근로자수": "1326", "홈페이지": "https://daekyonewif.com/", "기업소개": "업종 : 시니어 라이프케어 서비스업\n\n홈페이지 : https://daekyonewif.com/\n\n\n\n기업소개 : ㈜대교뉴이프는 대교의 교육·콘텐츠 역량을 기반으로 시니어의 건강하고 행복한 삶을 지원하는 라이프케어 전문기업입니다. 인지·신체·통합케어 및 방문형 재활·돌봄 서비스를 통해 시니어의 일상생활과 건강한 노후를 지원하고 있습니다.\n\n", "구인인원": "0", "구인직무": "", "직무 상세소개": "- 구인직무 : 시니어 인지·신체·통합케어 지도사 / 방문재활서비스 / 통합돌봄 요양보호사\n\n\n\n- 구인형태 : 직무별 계약형태 상이(위촉직·계약직 등)\n\n\n\n- 근무조건 : 직무별 상이 / 고용보험 및 4대보험 적용 여부는 계약형태에 따라 상이\n\n\n\n- 보수 : 직무별 상이 / 활동 건수 및 업무 시간에 따라 지급  \n\n※ 면접 시 상세 안내\n\n\n\n- 근무일 : 직무 및 서비스 일정에 따라 협의\n\n \n\n- 근무시간 : 직무 및 대상자 일정에 따라 상이 / 방문형 서비스", "구인형태": "프리랜서", "근무조건": "기타", "보수": "면접시 협의", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "필요학력 : 학력무관\n\n\n\n필요경력 : 경력무관(관련 경력자 우대)\n\n\n\n자격요건 : 직무별 관련 자격요건 상이 / 요양보호사는 자격증 필수\n\n", "우대사항": "시니어 대상 돌봄·교육·운동·건강 관련 경력자, 관련 자격증 보유자, 방문형 서비스 경험자", "실근무지": "전국 서비스 제공 지역", "근무일": "주7일", "근무시간": "1-3시간", "조회수": "113"}, {"모집구분": "중장년 친화 산업관", "당일 채용여부": "X", "기업명": "(주)커리어케어", "대표자명": "신현만", "업종": "서비스업", "근로자수": "141", "홈페이지": "https://www.careercare.co.kr/", "기업소개": "(주)커리어케어는 2000년에 설립된 국내 최대 규모의 헤드헌팅 전문 기업(서치펌)으로, \n\n산업별 전문 헤드헌터 네트워크를 바탕으로 대기업과 글로벌 기업에 고위 임원 및 핵심 인재 추천, 평판 조회, 인사 컨설팅 등 종합 HR 솔루션을 제공하며 시장을 선도하고 있습니다.\n\n\n\n\n\n부스콘텐츠:\n\n중장년의 경력관리 및 커리어 전환을 지원하는 커리어 전략 자문 서비스를 소개합니다. \n\n간단한 질문을 통해 자신의 경력과 커리어 방향을 점검해볼 수 있는 커리어 진단 콘텐츠를 제공하고, 이를 바탕으로 재취업·전직 등 커리어 방향을 탐색할 수 있는 정보를 제공합니다. \n\n\n\n또한 실제 중장년의 커리어 고민과 사례를 중심으로 커리어 전략 자문 서비스의 주요 내용과 활용 방법을 알기 쉽게 소개합니다.\n\n\n\n이를 통해 중장년 고객이 당사의 서비스를 직접 경험하고, 자신의 커리어를 새롭게 설계할 수 있는 기회를 제공합니다.\n\n\n\n*벤처확인기업 인증", "구인인원": "없음", "구인직무": "", "직무 상세소개": "※ 채용 진행하지 않음.   본 기업은 중장년 친화 산업관 참여기업으로, 박람회장에서 채용정보 제공 및 채용을 진행하지 않습니다.", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "23"}, {"모집구분": "중장년 친화 산업관", "당일 채용여부": "X", "기업명": "주식회사 사람인(원더풀시니어)", "대표자명": "황현순", "업종": "서비스", "근로자수": "385", "홈페이지": "https://www.saramin.co.kr", "기업소개": "대한민국 대표 커리어 플랫폼 사람인과, \n\n개발자 채용 플랫폼 점핏, 외국인 채용 플랫폼 코메이트, 중장년 채용 플랫폼 원더풀시니어를 운영하며, \n\n객관적인 평가도구와 전문성을 겸비한 채용 대행 및 컨설팅 서비스 등 \n\nHR 전 분야에서 끊임없는 혁신과 성장을 거듭하며 고객 만족을 이뤄 나가고 있습니다. \n\n\n\n\n\n*부스콘텐츠\n\n:1. 전반적인 서비스 이용 안내 및 플랫폼 공고 입사지원 지원 \n\n2. 부스 방문자 전원 혜택 : 부스에 방문해 주시는 모든 분께 &#39;개인화 직업역량검사 무료 이용 쿠폰&#39;을 배부 \n\n3. 회원가입 경품 이벤트 : 현장에서 원더풀시니어 회원가입을 완료한 분들을 대상으로 모바일 기프티콘 및 판촉물 등 경품을 제공 ", "구인인원": "없음", "구인직무": "", "직무 상세소개": "※ 채용 진행하지 않음.   본 기업은 중장년 친화 산업관 참여기업으로, 박람회장에서 채용정보 제공 및 채용을 진행하지 않습니다.", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "23"}, {"모집구분": "중장년 친화 산업관", "당일 채용여부": "X", "기업명": "주식회사 로쉬코리아(오뉴)", "대표자명": "현준엽", "업종": "예술, 스포츠 및 여가관련  서비스업", "근로자수": "19", "홈페이지": "https://onew.life/", "기업소개": "오뉴(ONEW)는 중장년 세대가 삶의 다음 단계를 보다 주체적으로 준비할 수 있도록 돕는\n\n 문화·여가 및 라이프스타일 브랜드입니다. \n\n\n\n오뉴는 중장년이 오랜 시간 일과 가족 중심의 삶을 살아오며 잠시 잊고 지냈던 자신의 관심과 취향을 다시 발견하고,\n\n새로운 사람과 경험을 만나며 일상을 확장할 수 있도록 다양한 문화·여가 프로그램과 오프라인 커뮤니티를 운영하고 있습니다. \n\n\n\n예술, 인문, 음악, 운동, 웰니스, 취미 등 다양한 분야의 프로그램을 통해 ‘내가 좋아하는 것’을 다시 찾을 수 있는 기회를 제공하고 있으며, 현재 월 400회차 이상의 다양한 프로그램을 운영하고 있습니다. \n\n\n\n또한 오뉴는 취미와 여가를 넘어, 중장년이 지금까지 쌓아온 경력과 경험을 새로운 일과 역할로 연결할 수 있도록 교육 및 강사양성과정도 함께 운영하고 있습니다. \n\n\n\n단순한 자격 취득에 그치지 않고 시니어 대상 디지털 교육, 스마트폰 활용, 사진 촬영 등 실제 강사 활동으로 이어질 수 있는 기회를 마련하고 있으며, 교육 수료 후 실제 강사 활동으로 연결된 사례도 만들어가고 있습니다.\n\n\n\n\n\n*부스 콘텐츠\n\n오뉴 부스는 “여러분, 요즘 어떻게 지내세요?”라는 질문에서 시작합니다. \n\n단순히 프로그램이나 강사양성과정을 일방적으로 소개하기보다는, 중장년 방문객이 현재 자신의 일상과 관심사를 자연스럽게 돌아보고 지금의 나에게 필요한 다음 활동을 찾아갈 수 있도록 구성할 예정입니다. \n\n\n\n 현장에서는 간단한 상담과 설문을 통해 방문객이 취미와 여가를 통해 ‘내가 좋아하는 것’을 다시 찾고 싶은지, \n\n또는 새로운 일과 도전을 통해 ‘내가 할 수 있는 것’을 다시 발견하고 싶은지를 확인하고, \n\n결과에 따라 오뉴에서 경험할 수 있는 프로그램과 활동을 맞춤형으로 안내합니다.\n\n\n\n 문화·예술, 인문, 운동, 웰니스, 취미 등 다양한 프로그램을 소개해 새로운 일상을 제안하는 한편, \n\n재취업이나 새로운 역할에 관심이 있는 방문객에게는 강사양성 과정을 안내할 예정입니다. \n\n\n\n특히 오뉴의 강사양성과정은 단순한 자격증 취득 과정이 아니라 새로운 도전과 재취업을 지원하는 과정으로 소개하고자 합니다. \n\n\n\n오뉴는 현재 월 400회차 이상의 다양한 프로그램을 운영하고 있으며, \n\n시니어 대상 디지털 교육, 스마트폰 활용, 사진 촬영 등 실제 강사 활동과 연계될 수 있는 과정을 운영하고 있습니다. \n\n양성과정 수료 후 실제 강사 활동으로 이어진 사례도 함께 소개하여, 교육 이후 새로운 역할과 활동으로 확장될 수 있다는 점을 전달할 계획입니다. \n\n\n\n 또한 오뉴는 프로그램이나 일자리 정보 제공에 그치지 않고, \n\n참여자들이 서로 만나고 관계를 이어갈 수 있도록 오프라인 중심의 커뮤니티를 운영하고 있습니다. \n\n\n\n이를 통해 방문객이 ‘내가 좋아하는 것’, ‘내가 할 수 있는 것’, 그리고 ‘함께할 사람’을 다시 발견할 수 있도록 돕는 브랜드라는 점을 전달하고자 합니다. \n\n\n\n상담 이후에는 방문 및 실제 프로그램 참여로 이어질 수 있도록 프로그램 쿠폰과 멤버십 혜택 등을 제공할 예정입니다 .", "구인인원": "없음", "구인직무": "", "직무 상세소개": "※ 채용 진행하지 않음.   본 기업은 중장년 친화 산업관 참여기업으로, 박람회장에서 채용정보 제공 및 채용을 진행하지 않습니다.", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "15"}, {"모집구분": "중장년 친화 산업관", "당일 채용여부": "X", "기업명": "주식회사 유니버설케어", "대표자명": "최영아", "업종": "제조업", "근로자수": "3", "홈페이지": "http://universalcare.co.kr/", "기업소개": "어린이, 고령자, 장애인 등 주거교통약자를 위한 제품을 \n\n연구개발, 제조하고, 관련 상품을 취급, 판매하는 유니버설케어입니다. \n\n\n\n유니버설 디자인 제품을 개발하고 판매함으로써 약자들을 위한 제품을 확산하는데 일조하는 기업입니다. \n\n\n\n주력 제품은 전기없이 수돗물 냉수 수압만으로 높이를 조절하는 높이조절 세면대입니다. \n\n항암환자, 고령자를 위한 100&#37; 인모 프리미엄 가발 등도 유통하고 있습니다", "구인인원": "없음", "구인직무": "", "직무 상세소개": "※ 채용 진행하지 않음.   본 기업은 중장년 친화 산업관 참여기업으로, 박람회장에서 채용정보 제공 및 채용을 진행하지 않습니다.", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "10"}, {"모집구분": "중장년 친화 산업관", "당일 채용여부": "X", "기업명": "㈜애니락", "대표자명": "이현진", "업종": "제조업", "근로자수": "6", "홈페이지": "www.anylock.kr", "기업소개": " ㈜애니락은 푸시풀 KS 안전손잡이 시리즈를 개발 및 생산하고 있으며, \n\n화재시 1초이 빠른 탈출과 30N 이하의 힘으로 작동하는 배리어프리 기능의 혁신지술제품이며, \n\n프리미엄 인테리어, 복지, 실버, 재난안전제품의 시장으로 확장합니다.\n\n\n\n정부조달의 기술인증을 통해 공공구매 시장으로 확장하고 있으며, \n\n설치 기술을 배워 설치 및 영업의 파트너를 구하고 있습니다.", "구인인원": "없음", "구인직무": "", "직무 상세소개": "※ 채용 진행하지 않음.   본 기업은 중장년 친화 산업관 참여기업으로, 박람회장에서 채용정보 제공 및 채용을 진행하지 않습니다.", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "8"}, {"모집구분": "중장년 친화 산업관", "당일 채용여부": "X", "기업명": "주식회사 덴티글로비즈", "대표자명": "원윤정", "업종": "제조업, 도매업", "근로자수": "3", "홈페이지": "www.dentyroad.com", "기업소개": "주식회사 덴티글로비즈는 전국 지자체 납품으로 기술력을 인정받은 ICT 구강 케어 전문 기업입니다. \n\n\n\n혁신적인 구강 위생 제품과 체계적인 솔루션을 제공하며, \n\n최근 해외 시장에서도 수출 문의가 이어지며 글로벌 성장 잠재력을 증명하고 있습니다. \n\n\n\n시니어의 구강 케어 기술로 더 건강한 일상을 만들겠습니다.", "구인인원": "없음", "구인직무": "", "직무 상세소개": "※ 채용 진행하지 않음.   본 기업은 중장년 친화 산업관 참여기업으로, 박람회장에서 채용정보 제공 및 채용을 진행하지 않습니다.", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "11"}, {"모집구분": "중장년 친화 산업관", "당일 채용여부": "X", "기업명": "주식회사 상상우리", "대표자명": "신철호", "업종": "경영컨설팅", "근로자수": "60", "홈페이지": "www.sangsangwoori.com", "기업소개": "주식회사 상상우리는 중장년의 경험과 전문성을 새로운 일과 사회적 가치로 연결하는 중장년 일자리 전문기업입니다. \n\n맞춤형 취업교육과 커리어 상담, 일자리 매칭을 제공하며, AI 활용·디지털 직무교육을 통해 \n\n변화하는 노동시장에 필요한 역량을 강화합니다. \n\n\n\n교육과 인턴십부터 취업 연계까지 전 과정을 지원해 \n\n중장년 인재와 기업이 함께 성장하는 지속 가능한 일자리 생태계를 만들어가고 있습니다.\n\n\n\n*부스콘텐츠: 중장년 일자리 플랫폼 ‘워크위즈’의 주요 서비스와 이용 방법을 안내하고, \n\n상상우리가 운영하는 중장년 맞춤형 취업교육, 일자리 매칭, 인턴십 및 취업 연계 사업을 소개합니다.\n\n\n\n 또 AI 활용 교육 등 중장년 대상 AI·디지털 교육 프로그램의 주요 내용과 참여 방법을 안내합니다. \n\n이를 통해 방문객들이 변화하는 사회와 채용환경에 필요한 역량과 커리어 기회를 함께 탐색할 수 있도록 관련 정보와 자료를 제공할 예정입니다.\n\n\n\n*사회적기업", "구인인원": "없음", "구인직무": "", "직무 상세소개": "※ 채용 진행하지 않음.   본 기업은 중장년 친화 산업관 참여기업으로, 박람회장에서 채용정보 제공 및 채용을 진행하지 않습니다.", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "23"}, {"모집구분": "중장년 친화 산업관", "당일 채용여부": "X", "기업명": "추가예정", "대표자명": "", "업종": "", "근로자수": "", "홈페이지": "", "기업소개": "", "구인인원": "미정", "구인직무": "", "직무 상세소개": "", "구인형태": "", "근무조건": "", "보수": "", "필요학력": "", "필요경력": "", "연령제한": "", "성별제한": "", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "", "근무시간": "", "조회수": ""}, {"모집구분": "중장년 친화 산업관", "당일 채용여부": "X", "기업명": "추가예정", "대표자명": "", "업종": "", "근로자수": "", "홈페이지": "", "기업소개": "", "구인인원": "미정", "구인직무": "", "직무 상세소개": "", "구인형태": "", "근무조건": "", "보수": "", "필요학력": "", "필요경력": "", "연령제한": "", "성별제한": "", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "", "근무시간": "", "조회수": ""}, {"모집구분": "정책 홍보관", "당일 채용여부": "X", "기업명": "(재)한경협중소기업협력센터 중장년내일센터", "대표자명": "", "업종": "서비스", "근로자수": "", "홈페이지": "", "기업소개": "대기업과 중소기업의 상생협력을 바탕으로 동반성장을 촉진함으로써\n\n우리 기업 발전과 국가경제 발전에 기여함을 목적으로 설립되었습니다.", "구인인원": "없음", "구인직무": "", "직무 상세소개": "※채용 진행하지 않음.\n\n\n\n2026 지역상생 일자리 박람회(K-Local Job Fair)는 충청권 우수기업과 수도권 인재(청년 및 중장년)를 연결해 지역기업의 인재채용을 지원하고, 지역경제 활성화 및 국가균형발전을 위해 개최되는 최초의 박람회입니다. \n\n\n\n수도권 인재(청년 및 중장년) 채용에 관심 있는 충청권 기업의 많은 관심과 참여 부탁드립니다. \n\n\n\nㅇ 행사개요\n\n - 행사일시 \n\n  · 1일차 : 2026. 10. 28.(수) 13:00~17:00\n\n  · 2일차 : 2026. 10. 29.(목) 10:00~17:00\n\n - 행사장소 : FKI컨퍼런스센터\n\n - 주최/주관 : 한국경제인협회, 고용노동부, 중소벤처기업부, 행정안전부, 중소기업중앙회, 한경협중소기업협력센터, 충남중소기업연합회, 충북기업진흥원 등\n\n - 행사규모 : 충청권 지자체-기업 연합부스 약 20개(지자체별 기업 4~5개사)\n\n\n\n  * 온라인구인 및 AI화상면접 참여기업 별도 모집\n\n - 참가대상 : 수도권 청년 및 중장년 5천 명 내외\n\n - 참가비용 : 무료 (기업 홍보자료 및 출장 체재비는 개별부담) \n\n\n\n - 프로그램\n\n  · 개회식(지역상생 일자리 협력 선포식)\n\n  · 지역상생 일자리 간담회(충북/충남 지역정착 성공사례 대상자 초청)\n\n  · 지역 정착/채용 설명회(희망지역), 인플루언서 강연\n\n  · 부대행사(컨설팅, 취업MBTI, 건강검진 등)\n\n\n\nㅇ 신청기한/방법\n\n - 신청기한 : 2026년 9월 11일 (금) 17:00까지\n\n - 신청서류 : 참가신청서, 사업자등록증, 기업 로고 파일, 대표자 서명 또는 직인 파일\n\n - 신청방법 : 참가신청서 및 제출서류를 이메일(fkilsc@gmail.com)로 제출\n\n\n\nㅇ 문의처 : 지역상생 일자리 박람회 운영사무국(기업)\n\n - T. 02-2055-4272\n\n - E. fkilsc@gmail.com\n\n - F. 02-2055-4270\n\n\n\n*참가신청 링크: https://docs.google.com/forms/d/e/1FAIpQLSeUEpPijtme8ccsDhulnGRMcRL_3JPR1yO105cOZHKgSH2xUQ/viewform", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "36"}, {"모집구분": "정책 홍보관", "당일 채용여부": "X", "기업명": "서울특별시(서울시일자리센터)", "대표자명": "", "업종": "", "근로자수": "", "홈페이지": "https://job.seoul.go.kr", "기업소개": "① 서울시 일자리센터\n\n시민의 원활한 취업활동을 지원하기 위해\n\n구인구직 등록, 취업 상담 및 알선, 취업 교육 등 다양한 취업지원서비스 제공\n\n\n\n②채용중심 취업지원 프로그램\n\n서울 거주 전 연령층 대상 맞춤형 교육 제공 \n\n\n\n", "구인인원": "없음", "구인직무": "", "직무 상세소개": "", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주7일", "근무시간": "8시간 이상", "조회수": "153"}, {"모집구분": "정책 홍보관", "당일 채용여부": "X", "기업명": "서울신용보증재단", "대표자명": "", "업종": "", "근로자수": "", "홈페이지": "", "기업소개": "1999년 지역신용보증재단법에 의거 설립되었으며 서울 소재 소상공인 등의 채무를\n\n보증함으로써 자금융통을 원활히 하여 서울경제 활성화 및 서민복리 증진에 기여를 목적으로 함 \n\n\n\n[주요기능]\n\n ○ (신용보증) 담보력이 부족한 소상공인 등에게 제도권 금융회사 이용 기회 확대\n\n ○ (종합지원) 금융과 경영 종합지원으로 기업 성장에 의한 양질의 일자리 창출\n\n", "구인인원": "없음", "구인직무": "", "직무 상세소개": "* 채용 진행하지 않음.\n\n\n\n소기업‧소상공인 창업보증(자금) 상담 \n\n서울시 소상공인 종합지원사업(자영업클리닉, 창업컨설팅 등) 안내", "구인형태": "프리랜서", "근무조건": "기타", "보수": "", "필요학력": "", "필요경력": "경력무관", "연령제한": "연령제한 없음", "성별제한": "성별제한 없음", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "주1일", "근무시간": "1-3시간", "조회수": "15"}, {"모집구분": "정책 홍보관", "당일 채용여부": "X", "기업명": "소상공인시장진흥공단", "대표자명": "", "업종": "", "근로자수": "", "홈페이지": "", "기업소개": "", "구인인원": "없음", "구인직무": "", "직무 상세소개": "", "구인형태": "", "근무조건": "", "보수": "", "필요학력": "", "필요경력": "", "연령제한": "", "성별제한": "", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "", "근무시간": "", "조회수": ""}, {"모집구분": "정책 홍보관", "당일 채용여부": "X", "기업명": "서울 리테크", "대표자명": "", "업종": "", "근로자수": "", "홈페이지": "", "기업소개": "", "구인인원": "없음", "구인직무": "", "직무 상세소개": "", "구인형태": "", "근무조건": "", "보수": "", "필요학력": "", "필요경력": "", "연령제한": "", "성별제한": "", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "", "근무시간": "", "조회수": ""}, {"모집구분": "정책 홍보관", "당일 채용여부": "X", "기업명": "서울시50플러스센터", "대표자명": "", "업종": "", "근로자수": "", "홈페이지": "", "기업소개": "", "구인인원": "없음", "구인직무": "", "직무 상세소개": "", "구인형태": "", "근무조건": "", "보수": "", "필요학력": "", "필요경력": "", "연령제한": "", "성별제한": "", "자격요건": "", "우대사항": "", "실근무지": "", "근무일": "", "근무시간": "", "조회수": ""}];
+const $=id=>document.getElementById(id);
+const e=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const dec=s=>{const t=document.createElement('textarea');t.innerHTML=s;return t.value};
+const cl=v=>v==null?'':dec(String(v)).replace(/\r/g,'').replace(/[ \t]+\n/g,'\n').replace(/\n{2,}/g,'\n').trim();
+const JOBS=[['상담·콜센터',/상담|콜센터|고객센터|케어콜|관제|모니터링/],['요양·돌봄',/요양|돌봄|간병|보호사|재가|펫시터|동행/],['산후·가사',/산후|산모|신생아|가사|베이비/],['청소·시설',/청소|미화|객실|룸메이드|경비|시설|정비원/],['조리·외식',/외식|조리|주방|급식|식당|서빙|홀|배식/],['운전·배송·물류',/운전|드라이버|배송|택배|물류|화물|상하차|운송|기사|B마트/],['영업·판매·마케팅',/영업|판매|마케|카운셀러|매장|파트너|세일즈/],['교육·강사',/교사|강사|교육|지도사|문해|코칭/],['사무·행정',/사무|행정|총무|경리|회계|관리자|운영|검수|데이터|전담자/],['생산·제조',/제조|생산|조립|포장|가공|공장/],['설계·콘텐츠',/설계|콘텐츠|크리에이터|AI|컨설|디자인/],['창업·프리랜서',/창업|가맹|경영주|점주|프리랜서|셀러/]];
+function tagsOf(t,full){let s=JOBS.filter(([,r])=>r.test(t)).map(x=>x[0]);if(!s.length)s=JOBS.filter(([,r])=>r.test(full.slice(0,400))).map(x=>x[0]);return s.length?s.slice(0,3):['기타']}
+const edu=v=>!v?'미기재':/무관/.test(v)?'학력무관':/대학/.test(v)?'대학교 이상':/고등/.test(v)?'고등학교 이상':'미기재';
+function norm(r){
+  const g=k=>cl(r[k]),nw='당일 채용여부' in r,w0=g('당일 채용여부');
+  const job=g('구인직무')||g('직무 상세소개');
+  const hire=nw?(w0!=='X'&&!/채용\s*진행하지\s*않/.test(job)):true;
+  let title=job.split('\n')[0]||'';title=title.replace(/^[\s\-•·]*(\d+\s*\.\s*)?(구인\s*직무\s*[:：]?\s*|직무\s*\d*\s*\.\s*)?/,'').trim();
+  if(!hire)title='채용 진행 안 함 (전시·홍보)';else if(!title)title='(직무 정보 미등록)';
+  const when=!nw?g('모집구분'):!hire?'채용 없음':w0.replace('당일 채용/향후 채용','당일·향후 채용');
+  const a0=g('연령제한'),age=a0||(nw?'':'연령제한 없음'),m=/(\d+)\s*세\s*미만/.exec(age),m2=/(\d+)\s*세\s*이하/.exec(age);
+  const sx=g('성별제한'),n=parseInt(String(r['구인인원']).replace(/[^\d]/g,''));
+  let hp=g('홈페이지');if(hp&&!/^https?:/i.test(hp))hp='https://'+hp;
+  const tg=hire?tagsOf(title+' '+when,job):['채용 없음'];
+  return{name:g('기업명'),ind:(nw?g('모집구분'):g('업종'))||'기타',biz:nw?g('업종'):'',type:when,hp,n:isNaN(n)?null:n,job,title,intro:g('기업소개'),emp:g('근로자수'),views:parseInt(r['조회수'])||0,kind:g('구인형태'),ins:g('근무조건'),pay:g('보수')||'-',edu:edu(g('필요학력')),exp:g('필요경력'),age,al:age.replace(/\s*지원가능/,''),maxAge:m?+m[1]-1:m2?+m2[1]:99,sexT:sx,sexOnly:/만/.test(sx)?(/여성/.test(sx)?'F':'M'):'',qual:g('자격요건'),pref:g('우대사항'),loc:g('실근무지').replace(/^근무예정지\s*/,'')||'-',days:g('근무일'),hours:g('근무시간'),tags:tg,hire,nowHire:/당일/.test(when)};
 }
-const fields=[...document.querySelectorAll('input:not([type=file]),textarea')];
-let t;const go=()=>{clearTimeout(t);t=setTimeout(render,60);try{localStorage.setItem('jobposter',JSON.stringify(Object.fromEntries(fields.map(e=>[e.id,e.value]))))}catch(e){}};
-fields.forEach(e=>e.addEventListener('input',go));
-const defaults={};fields.forEach(e=>defaults[e.id]=e.value);
-try{const sv=JSON.parse(localStorage.getItem('jobposter')||'null');if(sv)for(const k in sv)if($(k))$(k).value=sv[k]}catch(e){}
-function load(key,url){const im=new Image();im.onload=()=>{if(key=='logo')logoImg=im;else qrImg=im;render()};im.src=url}
-function pick(id,key){$(id).onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{load(key,r.result);try{localStorage.setItem('jp_'+key,r.result)}catch(e){}};r.readAsDataURL(f)}}
-pick('logo','logo');
-try{['logo'].forEach(k=>{const d=localStorage.getItem('jp_'+k);if(d)load(k,d)})}catch(e){}
-$('reset').onclick=()=>{for(const k in defaults)$(k).value=defaults[k];render();go()};
-$('dl').onclick=()=>{
-  render();const name='채용공고_'+new Date().toISOString().slice(0,10)+'.png';
-  const rot=document.createElement('canvas');rot.width=H;rot.height=W;const rc=rot.getContext('2d');rc.translate(0,W);rc.rotate(-Math.PI/2);rc.drawImage(cv,0,0);
-  rot.toBlob(async b=>{
-    try{const d=window.claude&&await claude.use('downloads');
-      if(d){await d.save({filename:name,data:b});$('msg').textContent='저장 요청을 보냈어요.';return}
-    }catch(e){if(e&&e.code==='declined'){$('msg').textContent='저장을 취소했어요.';return}}
-    const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();$('msg').textContent='PNG를 내려받았어요.';
-  },'image/png');
-};
-render();
-window.addEventListener('load',render);
-(document.fonts?document.fonts.load('900 40px "Noto Sans KR"').then(()=>document.fonts.load('500 40px "Noto Sans KR"')):Promise.resolve()).then(render).catch(()=>{});
+const dh=c=>[c.days,c.hours].filter(Boolean).join(' · ')||'-';
+const S={q:'',ind:'',tags:new Set(),qf:new Set(),age:0,sex:'',sort:'no',sk:'',sd:1,view:'table',fav:false,al:'',type:'',kind:'',days:'',hours:'',ins:''};
+const DYN=[['al','채용 연령'],['type','채용 시점'],['kind','고용형태'],['days','근무일'],['hours','근무시간'],['ins','근무조건(보험)']];
+const QF=[['r','채용 진행 기업',c=>c.hire],['w','당일 채용',c=>c.hire&&c.nowHire],['x','경력 무관',c=>c.hire&&/무관/.test(c.exp)],['c','자격증·면허 불필요',c=>c.hire&&!/자격증|면허/.test(c.qual)],['i','4대보험 가입',c=>c.hire&&c.ins==='4대보험 가입'],['h','하루 7시간 이하',c=>c.hire&&!!c.hours&&c.hours!=='8시간 이상'],['d','주 3일 이하',c=>c.hire&&parseInt((c.days.match(/\d/)||[9])[0])<=3]];
+const bd=c=>{const b=[];if(!c.hire)b.push(['w','채용 없음']);if(c.hire&&c.nowHire)b.push(['now','당일 채용']);if(c.hire&&c.exp)b.push(/무관/.test(c.exp)?['ok','경력 무관']:['w',c.exp]);if(c.hire&&c.edu==='학력무관')b.push(['ok','학력 무관']);else if(c.hire&&c.edu!=='미기재')b.push(['w',c.edu]);if(/자격증|면허/.test(c.qual))b.push(['w','자격증 필요']);if(c.ins==='4대보험 가입')b.push(['ok','4대보험']);return b.map(([t,x])=>`<span class="bd ${t}">${e(x)}</span>`).join('')};
+const IC=['var(--ac)'];
+let DATA=[],INDS=[],FAV=new Set();
+try{FAV=new Set(JSON.parse(localStorage.getItem('fav')||'[]'));if(localStorage.getItem('big')==='1')setBig(true)}catch(x){}
+function saveFav(){try{localStorage.setItem('fav',JSON.stringify([...FAV]))}catch(x){}}
+function setBig(b){document.documentElement.classList.toggle('big',b);$('big').setAttribute('aria-pressed',b);try{localStorage.setItem('big',b?'1':'0')}catch(x){}}
+function toast(t){const o=$('toast');o.textContent=t;o.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>o.style.display='none',3500)}
+const cnt=(k,f)=>{const o={};DATA.forEach(c=>(f?c[k]:[c[k]]).forEach(v=>{if(v)o[v]=(o[v]||0)+1}));return Object.entries(o).sort((a,b)=>b[1]-a[1])};
+function setData(d,src){
+  d=d.filter(c=>c.name!=='추가예정');DATA=d;cur=null;if(PVON)ph();d.forEach((c,i)=>c.i=i);INDS=cnt('ind').map(x=>x[0]);
+  Object.assign(S,{q:'',ind:'',tags:new Set(),qf:new Set(),age:0,sex:'',fav:false,al:'',type:'',kind:'',days:'',hours:'',ins:''});
+  $('q').value='';$('age').value='';$('sex').value='';
+  $('dyn').innerHTML=DYN.map(([k,l])=>`<label>${l}<select data-k="${k}"><option value="">전체</option>${cnt(k).map(([v,c])=>`<option value="${e(v)}">${e(v)} (${c})</option>`).join('')}</select></label>`).join('');
+  $('more').innerHTML='';document.querySelectorAll('#dyn>label:nth-child(n+2)').forEach(l=>$('more').appendChild(l));$('qf').innerHTML=QF.map(([k,t,f])=>`<button data-q="${k}">${t}<em>${DATA.filter(f).length}</em></button>`).join('');$('chips').innerHTML=cnt('tags',1).map(([v,c])=>`<button data-t="${e(v)}">${e(v)}<em>${c}</em></button>`).join('');
+  const tot=d.reduce((a,c)=>a+(c.n||0),0);
+  $('sub').textContent=`총 ${d.length}개 기업 · 채용인원 ${tot.toLocaleString()}명${src?' · '+src:''}`;
+  drawTabs();go();
+}
+function drawTabs(){$('tabs').innerHTML=`<button data-i="" class="${S.ind?'':'on'}">전체<em>${DATA.length}</em></button>`+INDS.map(v=>`<button data-i="${e(v)}" class="${S.ind===v?'on':''}">${e(v)}<em>${DATA.filter(c=>c.ind===v).length}</em></button>`).join('')}
+function pass(c){
+  if(S.q){const h=(c.name+' '+c.job+' '+c.loc+' '+c.qual+' '+c.pref+' '+c.ind+' '+c.tags.join(' ')).toLowerCase();if(!S.q.split(/\s+/).every(w=>h.includes(w)))return false}
+  if(S.ind&&c.ind!==S.ind)return false;
+  if(S.tags.size&&!c.tags.some(t=>S.tags.has(t)))return false;
+  for(const k of ['al','type','kind','days','hours','ins'])if(S[k]&&c[k]!==S[k])return false;
+  if(S.age&&c.maxAge<S.age)return false;
+  if(S.sex&&c.sexOnly&&c.sexOnly!==S.sex)return false;
+  for(const q of S.qf)if(!QF.find(x=>x[0]===q)[2](c))return false;
+  if(S.fav&&!FAV.has(c.name))return false;
+  return true;
+}
+const hc=c=>c.n==null?'-':c.n===0?'상시·협의':c.n+'명';
+const col=c=>IC[Math.max(0,INDS.indexOf(c.ind))%IC.length];
+const star=c=>`<button class="star ${FAV.has(c.name)?'on':''}" data-s="${c.i}" aria-label="관심기업 표시" title="관심기업">★</button>`;
+function card(c){return`<article class="card" data-i="${c.i}" tabindex="0" style="--ic:${col(c)}"><div class="top"><span class="ind">${e(c.ind)}</span><span class="pill">${e(c.type)}</span>${star(c)}</div><h3>${e(c.name)}</h3><p class="job">${e(c.title)}</p><div class="tags">${c.tags.map(t=>`<span>${e(t)}</span>`).join('')}</div><div class="tags">${bd(c)}</div><dl class="kv"><div><dt>채용인원</dt><dd class="hc">${e(hc(c))}</dd></div><div><dt>고용형태</dt><dd>${e(c.kind)}</dd></div><div class="w"><dt>보수</dt><dd>${e(c.pay)}</dd></div><div><dt>연령</dt><dd>${e(c.age)}</dd></div><div><dt>근무</dt><dd>${e(dh(c))}</dd></div><div class="w"><dt>근무지</dt><dd>${e(c.loc)}</dd></div></dl></article>`}
+const TH=[['name','기업명'],['ind','관'],['title','직무'],['kind','형태'],['pay','보수'],['n','인원'],['maxAge','채용연령'],['days','근무'],['loc','근무지']];
+function table(l){const a=k=>S.sk===k?(S.sd>0?' ▲':' ▼'):'';return`<div class="tw"><table><thead><tr><th></th>${TH.map(([k,t])=>`<th data-sk="${k}">${t}${a(k)}</th>`).join('')}</tr></thead><tbody>${l.map(c=>`<tr data-i="${c.i}"><td>${star(c)}</td><td>${c.hire&&c.nowHire?'<i class="nw">당일</i>':''}<b>${e(c.name)}</b></td><td><i class="dot" style="background:${col(c)}"></i>${e(c.ind.replace(/^중장년\s*/,''))}</td><td title="${e(c.title)}">${e(c.title)}</td><td>${e(c.kind)}</td><td title="${e(c.pay)}">${e(c.pay)}</td><td class="num">${e(hc(c))}</td><td>${e(c.al)}</td><td>${e(dh(c))}</td><td title="${e(c.loc)}">${e(c.loc)}</td></tr>`).join('')}</tbody></table></div>`}
+function go(){go0();act();if(pvOn()&&cur)detail(cur,1);else mark()}
+function go0(){
+  const l=DATA.filter(pass);
+  if(S.sk){const d=S.sd,k=S.sk;l.sort((a,b)=>{let x=a[k],y=b[k];if(k==='n'){x=x??-1;y=y??-1}return d*(typeof x==='number'?x-y:String(x).localeCompare(String(y),'ko'))})}
+  CUR=l.map(c=>c.i);$('cnt').textContent=`${DATA.length}개 중 ${l.length}개 기업${S.age?` · ${S.age}세 지원 가능`:''}`;
+  $('out').innerHTML=l.length?(S.view==='card'?`<div class="cards">${l.map(card).join('')}</div>`:table(l)):`<div class="empty"><p><b>조건에 맞는 기업이 없어요.</b></p><p>필터를 줄이거나 검색어를 바꿔 보세요.</p><button class="btn" onclick="reset()">필터 초기화</button></div>`;
+}
+function reset(){Object.assign(S,{q:'',ind:'',tags:new Set(),qf:new Set(),age:0,sex:'',fav:false,al:'',type:'',kind:'',days:'',hours:'',ins:''});$('q').value='';$('age').value='';$('sex').value='';document.querySelectorAll('#dyn select,#more select').forEach(s=>s.value='');document.querySelectorAll('#chips .on,#qf .on').forEach(b=>b.classList.remove('on'));$('favb').classList.remove('on');drawTabs();go()}
+let CUR=[],cur=null,PVON=true;
+const pvOn=()=>PVON&&innerWidth>1100;
+const ph=()=>{$('pv').innerHTML='<p class="ph"><b>미리보기</b><br>목록에서 회사를 누르면 여기에 보여요.<br>↑ ↓ 키로 다음 회사로 넘길 수 있어요.</p>'};
+function mark(){if(!pvOn()||!cur)return;$('out').querySelectorAll('.sel').forEach(x=>x.classList.remove('sel'));const r=$('out').querySelector(`[data-i="${cur.i}"]`);if(r){r.classList.add('sel');r.scrollIntoView({block:'nearest'})}}
+function act(){const a=[];if(S.q)a.push(['q','검색: '+S.q]);if(S.ind)a.push(['ind',S.ind]);S.tags.forEach(t=>a.push(['t:'+t,t]));if(S.age)a.push(['age',S.age+'세']);if(S.sex)a.push(['sex',S.sex==='F'?'여성':'남성']);for(const [k] of DYN)if(S[k])a.push([k,S[k]]);if(S.fav)a.push(['fav','관심기업']);$('act').innerHTML=a.length?a.map(([k,t])=>`<button data-x="${e(k)}" title="조건 해제">${e(t)} ✕</button>`).join(''):'<span class="cl">없음</span>'}
+function setPv(b){PVON=b;document.documentElement.classList.toggle('pvon',b);$('pvb').classList.toggle('on',b);try{localStorage.setItem('pv',b?'1':'0')}catch(x){}if(b)cur&&pvOn()?detail(cur,1):ph()}
+const nav=c=>{const i=CUR.indexOf(c.i);return`<div class="nav"><button class="btn" id="dp" ${i<1?'disabled':''}>◀ 이전</button><span>${i<0?'-':i+1} / ${CUR.length}</span><button class="btn" id="dz">크게 보기</button><button class="btn" id="dn" ${i>=CUR.length-1?'disabled':''}>다음 ▶</button></div>`};
+function step(d){const i=CUR.indexOf(cur.i)+d;if(i>=0&&i<CUR.length)detail(DATA[CUR[i]],!$('dlg').open&&pvOn())}
+function detail(c,pv){cur=c;pvHide();
+  const row=(k,v)=>v&&v!=='-'?`<tr><th>${k}</th><td>${e(v)}</td></tr>`:'';
+  $('dc').innerHTML=`${nav(c)}<div class="dh"><div><span class="ind" style="color:${col(c)}">${e(c.ind)}</span> <span class="pill">${e(c.type)}</span><h2>${e(c.name)}</h2></div><button class="x" id="dx" aria-label="닫기">✕</button></div><div class="tags">${c.tags.map(t=>`<span>${e(t)}</span>`).join('')}</div><div class="tags" style="margin-top:.4rem">${bd(c)}</div><div class="key"><div><small>보수</small><b>${e(c.pay)}</b></div><div><small>채용인원</small><b>${e(hc(c))}</b></div><div><small>채용 연령</small><b>${e(c.al)}</b></div><div><small>근무</small><b>${e(dh(c))}</b></div></div><h4>어떤 일인가요?</h4><p class="pre">${e(c.job)||'-'}</p><h4>조건 자세히 보기</h4><table class="dt">${row('보수',c.pay)}${row('고용형태',c.kind)}${row('채용인원',hc(c))}${row('연령',c.age)}${row('성별',c.sexT)}${row('학력',c.edu)}${row('경력',c.exp)}${row('근무일·시간',dh(c))}${row('근무조건',c.ins)}${row('근무지',c.loc)}${row('업종',c.biz)}${row('직원 수',c.emp?(+c.emp?(+c.emp).toLocaleString()+'명':c.emp):'')}</table>${c.qual?`<h4>이런 분을 찾아요</h4><p class="pre">${e(c.qual)}</p>`:''}${c.pref?`<h4>이런 경우 유리해요</h4><p class="pre">${e(c.pref)}</p>`:''}${c.intro?`<h4>회사 소개</h4><p class="pre">${e(c.intro)}</p>`:''}<div class="foot">${c.hp?`<a class="btn pri" href="${e(c.hp)}" target="_blank" rel="noopener">홈페이지 열기 ↗</a>`:''}<button class="btn" id="ds" data-i="${c.i}">${FAV.has(c.name)?'★ 관심 해제':'☆ 관심기업 담기'}</button></div>`;
+  if(pv){$('pv').innerHTML=$('dc').innerHTML;mark();return}
+  if(!$('dlg').open)$('dlg').showModal();
+}
+function toggleFav(c){FAV.has(c.name)?FAV.delete(c.name):FAV.add(c.name);saveFav()}
+$('out').addEventListener('click',ev=>{const th=ev.target.closest('[data-sk]');if(th){const k=th.dataset.sk;S.sd=S.sk===k?-S.sd:1;S.sk=k;$('sort').value='no';go();return}
+  const s=ev.target.closest('[data-s]');if(s){ev.stopPropagation();toggleFav(DATA[+s.dataset.s]);go();return}
+  const r=ev.target.closest('[data-i]');if(r)detail(DATA[+r.dataset.i],pvOn());
+});
+$('out').addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target.classList.contains('card'))detail(DATA[+ev.target.dataset.i],pvOn())});
+$('dlg').addEventListener('click',ev=>{
+  if(ev.target===$('dlg')||ev.target.id==='dx')$('dlg').close();
+  if(ev.target.id==='dp')step(-1);if(ev.target.id==='dn')step(1);
+  if(ev.target.id==='ds'){const c=DATA[+ev.target.dataset.i];toggleFav(c);detail(c);go()}
+});
+$('q').oninput=ev=>{S.q=ev.target.value.trim().toLowerCase();go()};
+$('age').oninput=ev=>{S.age=+ev.target.value||0;go()};
+$('sex').onchange=ev=>{S.sex=ev.target.value;go()};
+$('sort').onchange=ev=>{const v=ev.target.value;S.sk={no:'',head:'n',name:'name',views:'views'}[v];S.sd=(v==='head'||v==='views')?-1:1;go()};
+$('dyn').onchange=ev=>{S[ev.target.dataset.k]=ev.target.value;go()};
+$('more').onchange=$('dyn').onchange;
+$('tabs').onclick=ev=>{const b=ev.target.closest('button');if(!b)return;S.ind=b.dataset.i;drawTabs();go()};
+$('chips').onclick=ev=>{const b=ev.target.closest('button');if(!b)return;const t=b.dataset.t;S.tags.has(t)?S.tags.delete(t):S.tags.add(t);b.classList.toggle('on');go()};
+$('qf').onclick=ev=>{const b=ev.target.closest('button');if(!b)return;const k=b.dataset.q;S.qf.has(k)?S.qf.delete(k):S.qf.add(k);b.classList.toggle('on');go()};
+$('favb').onclick=()=>{S.fav=!S.fav;$('favb').classList.toggle('on',S.fav);$('favb').textContent=(S.fav?'★':'☆')+' 관심기업만';go()};
+$('rst').onclick=reset;
+document.querySelector('.seg').onclick=ev=>{const b=ev.target.closest('button');if(!b)return;S.view=b.dataset.v;document.querySelectorAll('.seg button').forEach(x=>x.classList.toggle('on',x===b));go()};
+$('big').onclick=()=>setBig(!document.documentElement.classList.contains('big'));
+async function load(f){
+  if(typeof XLSX==='undefined'){toast('엑셀 읽기 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.');return}
+  try{
+    const wb=XLSX.read(await f.arrayBuffer());
+    const names=wb.SheetNames.includes('참여기업정보')?['참여기업정보']:wb.SheetNames;
+    const seen=new Set(),d=[];
+    names.forEach(n=>XLSX.utils.sheet_to_json(wb.Sheets[n],{defval:''}).forEach(r=>{const key=r['기업명']+'|'+(r['모집구분']||'');if(r['기업명']&&!seen.has(key)){seen.add(key);d.push(norm(r))}}));
+    if(!d.length)throw 0;
+    setData(d,f.name);toast(`${d.length}개 기업을 불러왔어요`);
+  }catch(x){toast('"기업명" 열이 있는 엑셀 파일인지 확인해 주세요.')}
+}
+$('file').onchange=ev=>{if(ev.target.files[0])load(ev.target.files[0]);ev.target.value=''};
+$('dlg').addEventListener('keydown',ev=>{if(ev.key==='ArrowRight')step(1);if(ev.key==='ArrowLeft')step(-1)});
+function setDense(b){document.documentElement.classList.toggle('dense',b);$('dens').classList.toggle('on',b);try{localStorage.setItem('dense',b?'1':'0')}catch(x){}}
+$('dens').onclick=()=>setDense(!document.documentElement.classList.contains('dense'));
+let d0=true;try{d0=localStorage.getItem('dense')!=='0'}catch(x){}setDense(d0);
+const cut=(s,n)=>s.length>n?s.slice(0,n)+'…':s;
+let pvId=-1;
+function pvShow(c,x,y){const p=$('hov');if(pvId!==c.i){pvId=c.i;p.innerHTML=`<b class="n">${e(c.name)}</b><div class="tags" style="margin:.3rem 0">${bd(c)}</div><h5>하는 일</h5><p>${e(cut(c.job,180))}</p>${c.qual?`<h5>이런 분을 찾아요</h5><p>${e(cut(c.qual,120))}</p>`:''}${c.pref?`<h5>이런 경우 유리해요</h5><p>${e(cut(c.pref,100))}</p>`:''}<h5>근무지</h5><p>${e(cut(c.loc,60))}</p>`}
+  p.style.display='block';const w=p.offsetWidth,hh=p.offsetHeight;let l=x+16,t=y+16;if(l+w>innerWidth-8)l=x-w-16;if(l<8)l=8;if(t+hh>innerHeight-8)t=innerHeight-hh-8;if(t<8)t=8;p.style.left=l+'px';p.style.top=t+'px'}
+function pvHide(){pvId=-1;$('hov').style.display='none'}
+if(matchMedia('(hover:hover)').matches){
+  $('out').addEventListener('mousemove',ev=>{if(pvOn()){pvHide();return}const r=ev.target.closest('[data-i]');if(!r||ev.target.closest('[data-s]')){pvHide();return}pvShow(DATA[+r.dataset.i],ev.clientX,ev.clientY)});
+  $('out').addEventListener('mouseleave',pvHide);
+}
+addEventListener('scroll',pvHide,{passive:true});
+$('pvb').onclick=()=>setPv(!PVON);
+$('pv').addEventListener('click',ev=>{const t=ev.target.id;if(t==='dp')step(-1);else if(t==='dn')step(1);else if(t==='dz')detail(cur);else if(t==='ds'){toggleFav(cur);detail(cur,1);go()}});
+$('dlg').addEventListener('close',()=>{if(pvOn()&&cur)detail(cur,1)});
+addEventListener('keydown',ev=>{if(!pvOn()||$('dlg').open||/INPUT|SELECT|TEXTAREA/.test(ev.target.tagName))return;if(ev.key==='ArrowDown'||ev.key==='ArrowUp'){ev.preventDefault();cur?step(ev.key==='ArrowDown'?1:-1):CUR.length&&detail(DATA[CUR[0]],1)}});
+$('act').onclick=ev=>{const b=ev.target.closest('button');if(!b)return;const k=b.dataset.x;
+  if(k==='q')S.q='';else if(k==='ind')S.ind='';else if(k.startsWith('t:'))S.tags.delete(k.slice(2));else if(k==='age')S.age=0;else if(k==='sex')S.sex='';else if(k==='fav')S.fav=false;else S[k]='';
+  $('q').value=S.q;$('age').value=S.age||'';$('sex').value=S.sex;document.querySelectorAll('#dyn select,#more select').forEach(s=>s.value=S[s.dataset.k]);document.querySelectorAll('#chips button').forEach(x=>x.classList.toggle('on',S.tags.has(x.dataset.t)));$('favb').classList.toggle('on',S.fav);$('favb').textContent=(S.fav?'★':'☆')+' 관심기업';drawTabs();go()};
+let p0=true;try{p0=localStorage.getItem('pv')!=='0'}catch(x){}setPv(p0);
+let dc=0;
+addEventListener('dragenter',ev=>{ev.preventDefault();dc++;$('drop').style.display='flex'});
+addEventListener('dragleave',()=>{if(--dc<=0){dc=0;$('drop').style.display='none'}});
+addEventListener('dragover',ev=>ev.preventDefault());
+addEventListener('drop',ev=>{ev.preventDefault();dc=0;$('drop').style.display='none';const f=ev.dataTransfer.files[0];if(f)load(f)});
+(()=>{const d=Math.round((new Date(2026,9,20)-new Date(new Date().toDateString()))/864e5);$('dday').textContent=d>0?`개최 D-${d}`:d===0?'오늘 개최!':'개최 완료'})();
+setData(RAW.map(norm),'');if(innerWidth<820)$('side').open=false;
 </script>
 </body>
 </html>
